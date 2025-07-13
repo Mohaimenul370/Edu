@@ -129,7 +129,7 @@ class MyApp extends StatelessWidget {
         '/numbers_to_20_game': (context) => const NumbersTo20Screen(isGameMode: true),
         '/shapes': (context) => const ShapesChapterScreen(),
         '/vocab': (context) => const AlphabetScreen(),
-        '/analysis': (context) => const StatisticsChapterScreen(),
+        '/statistics_1': (context) => const StatisticsChapterScreen(),
         '/statistics_learn': (context) => const StatisticsScreen(isGameMode: false),
         '/statistics_game': (context) => const StatisticsScreen(isGameMode: true),
         '/settings': (context) => const SettingsScreen(),

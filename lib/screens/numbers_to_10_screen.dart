@@ -677,6 +677,9 @@ class _NumbersTo10ScreenState extends State<NumbersTo10Screen> with TickerProvid
               questions.length,
             );
             developer.log('Game progress saved for numbers_to_10: Score $score out of ${questions.length}');
+            setState(() {
+              SharedPreferenceService.updateOverallProgress();
+            });
             _showGameCompleteDialog();
           }
         }

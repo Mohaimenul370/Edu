@@ -90,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
     {
       'title': 'Statistics',
       'icon': Icons.bar_chart,
-      'route': '/analysis',
+      'route': '/statistics_1',
       'color': Color(0xFF4CAF50), // Green
     },
     {
@@ -140,9 +140,6 @@ class _HomeScreenState extends State<HomeScreen> {
       for (var chapter in chapters) {
         var route = chapter['route'].toString().substring(1);
         // Map 'analysis' to 'statistics' for consistency
-        if (route == 'analysis') {
-          route = 'statistics';
-        }
         final score = SharedPreferenceService.getGamePercentage(route);
         final completed = SharedPreferenceService.isGameCompleted(route);
         _gameScores[route] = score;
