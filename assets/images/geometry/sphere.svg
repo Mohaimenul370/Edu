@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sphere -->
+  <circle cx="100" cy="100" r="50" fill="#E1BEE7" stroke="#9C27B0" stroke-width="2"/>
+  <ellipse cx="100" cy="100" rx="50" ry="15" fill="none" stroke="#9C27B0" stroke-width="2"/>
+  <path d="M100 50 Q150 100 100 150" fill="none" stroke="#9C27B0" stroke-width="2"/>
+  
+  <!-- Direction arrows -->
+  <g stroke="#6A1B9A" stroke-width="2" fill="none">
+    <!-- Up arrow -->
+    <path d="M100 30 L100 10 M95 15 L100 10 L105 15"/>
+    <!-- Right arrow -->
+    <path d="M170 100 L190 100 M185 95 L190 100 L185 105"/>
+    <!-- Down arrow -->
+    <path d="M100 170 L100 190 M95 185 L100 190 L105 185"/>
+    <!-- Left arrow -->
+    <path d="M30 100 L10 100 M15 95 L10 100 L15 105"/>
+  </g>
+</svg> 

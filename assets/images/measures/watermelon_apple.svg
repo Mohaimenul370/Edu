@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Watermelon -->
+  <g transform="translate(30,50)">
+    <!-- Main body -->
+    <path d="
+      M 10,60
+      A 50,50 0 0,1 110,60
+      L 100,10
+      A 40,40 0 0,0 20,10
+      Z"
+      fill="#FF5252"
+    />
+    <!-- Rind -->
+    <path d="
+      M 10,60
+      A 50,50 0 0,1 110,60
+      L 100,10
+      A 40,40 0 0,0 20,10
+      Z"
+      fill="none"
+      stroke="#4CAF50"
+      stroke-width="10"
+    />
+    <!-- Seeds -->
+    <circle cx="40" cy="30" r="3" fill="#000000"/>
+    <circle cx="60" cy="40" r="3" fill="#000000"/>
+    <circle cx="80" cy="30" r="3" fill="#000000"/>
+    <text x="60" y="100" text-anchor="middle" fill="#000000" font-size="14">Watermelon</text>
+  </g>
+
+  <!-- Apple -->
+  <g transform="translate(200,50)">
+    <!-- Main body -->
+    <circle cx="40" cy="40" r="30" fill="#FF1744"/>
+    <!-- Stem -->
+    <path d="M 40,10 L 40,0" stroke="#795548" stroke-width="4"/>
+    <!-- Leaf -->
+    <path d="
+      M 40,0
+      C 50,0 60,10 40,20"
+      fill="#4CAF50"
+    />
+    <!-- Shine -->
+    <circle cx="30" cy="30" r="10" fill="#FFFFFF" opacity="0.3"/>
+    <text x="40" y="100" text-anchor="middle" fill="#000000" font-size="14">Apple</text>
+  </g>
+</svg> 

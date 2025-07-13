@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="0" y="0" width="300" height="200" fill="white"/>
+  
+  <!-- Grid -->
+  <line x1="150" y1="0" x2="150" y2="200" stroke="black" stroke-width="2"/>
+  <line x1="0" y1="50" x2="300" y2="50" stroke="black" stroke-width="2"/>
+  
+  <!-- Headers -->
+  <text x="75" y="30" text-anchor="middle" font-family="Arial" font-size="14" fill="black" font-weight="bold">Has curved sides</text>
+  <text x="225" y="30" text-anchor="middle" font-family="Arial" font-size="14" fill="black" font-weight="bold">Has straight sides</text>
+  
+  <!-- Left side items -->
+  <circle cx="75" cy="100" r="20" fill="none" stroke="black" stroke-width="1"/>
+  <text x="75" y="140" text-anchor="middle" font-family="Arial" font-size="12" fill="black">Circle</text>
+  
+  <!-- Right side items -->
+  <rect x="205" y="80" width="40" height="40" fill="none" stroke="black" stroke-width="1"/>
+  <text x="225" y="140" text-anchor="middle" font-family="Arial" font-size="12" fill="black">Square</text>
+</svg> 

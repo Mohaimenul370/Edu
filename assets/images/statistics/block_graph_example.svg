@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="0" y="0" width="300" height="200" fill="white"/>
+  
+  <!-- Title -->
+  <text x="150" y="30" text-anchor="middle" font-family="Arial" font-size="16" fill="black" font-weight="bold">Favorite Colors</text>
+  
+  <!-- Y-axis -->
+  <line x1="50" y1="50" x2="50" y2="170" stroke="black" stroke-width="2"/>
+  
+  <!-- X-axis -->
+  <line x1="50" y1="170" x2="250" y2="170" stroke="black" stroke-width="2"/>
+  
+  <!-- Red blocks -->
+  <text x="80" y="80" text-anchor="end" font-family="Arial" font-size="14" fill="black">Red</text>
+  <rect x="90" y="65" width="30" height="30" fill="#ffcdd2" stroke="#f44336" stroke-width="1"/>
+  <rect x="120" y="65" width="30" height="30" fill="#ffcdd2" stroke="#f44336" stroke-width="1"/>
+  <rect x="150" y="65" width="30" height="30" fill="#ffcdd2" stroke="#f44336" stroke-width="1"/>
+  
+  <!-- Blue blocks -->
+  <text x="80" y="120" text-anchor="end" font-family="Arial" font-size="14" fill="black">Blue</text>
+  <rect x="90" y="105" width="30" height="30" fill="#bbdefb" stroke="#2196f3" stroke-width="1"/>
+  <rect x="120" y="105" width="30" height="30" fill="#bbdefb" stroke="#2196f3" stroke-width="1"/>
+  <rect x="150" y="105" width="30" height="30" fill="#bbdefb" stroke="#2196f3" stroke-width="1"/>
+  <rect x="180" y="105" width="30" height="30" fill="#bbdefb" stroke="#2196f3" stroke-width="1"/>
+  
+  <!-- Green blocks -->
+  <text x="80" y="160" text-anchor="end" font-family="Arial" font-size="14" fill="black">Green</text>
+  <rect x="90" y="145" width="30" height="30" fill="#c8e6c9" stroke="#4caf50" stroke-width="1"/>
+  <rect x="120" y="145" width="30" height="30" fill="#c8e6c9" stroke="#4caf50" stroke-width="1"/>
+</svg> 

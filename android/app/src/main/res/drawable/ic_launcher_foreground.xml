@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Center the new 3D app icon with proper margins for adaptive icon safe zone -->
+    <item
+        android:width="76dp"
+        android:height="76dp"
+        android:gravity="center">
+        <bitmap
+            android:src="@drawable/playstore_icon"
+            android:gravity="center" />
+    </item>
+</layer-list> 

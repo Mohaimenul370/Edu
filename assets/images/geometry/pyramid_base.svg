@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pyramid with highlighted base -->
+  <!-- Base (square) -->
+  <path d="M50 150 L150 150 L150 50 L50 50 Z" fill="#E1BEE7" stroke="#9C27B0" stroke-width="3"/>
+  
+  <!-- Pyramid edges -->
+  <path d="M50 150 L100 30 L150 150" fill="none" stroke="#9C27B0" stroke-width="2"/>
+  <path d="M100 30 L100 150" fill="none" stroke="#9C27B0" stroke-width="2" stroke-dasharray="5,5"/>
+  
+  <!-- Base highlight -->
+  <text x="100" y="100" text-anchor="middle" fill="#6A1B9A" font-size="16">Base</text>
+  <path d="M70 120 L130 120" fill="none" stroke="#6A1B9A" stroke-width="2"/>
+  <text x="100" y="170" text-anchor="middle" fill="#6A1B9A" font-size="14">Square Base</text>
+</svg> 

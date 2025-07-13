@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Cube faces with isometric projection -->
+  <!-- Top face -->
+  <path d="M100 40 L160 70 L100 100 L40 70 Z" fill="#9C27B0" stroke="#6A1B9A" stroke-width="2"/>
+  <!-- Right face -->
+  <path d="M160 70 L160 130 L100 160 L100 100 Z" fill="#BA68C8" stroke="#6A1B9A" stroke-width="2"/>
+  <!-- Left face -->
+  <path d="M40 70 L40 130 L100 160 L100 100 Z" fill="#E1BEE7" stroke="#6A1B9A" stroke-width="2"/>
+  <!-- Face numbers -->
+  <text x="100" y="70" text-anchor="middle" fill="white" font-size="14">1</text>
+  <text x="130" y="115" text-anchor="middle" fill="white" font-size="14">2</text>
+  <text x="70" y="115" text-anchor="middle" fill="white" font-size="14">3</text>
+  <!-- Hidden faces indication -->
+  <text x="100" y="180" text-anchor="middle" fill="#6A1B9A" font-size="12">+3 more faces</text>
+</svg> 

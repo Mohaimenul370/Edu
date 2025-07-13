@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="0" y="0" width="300" height="200" fill="white"/>
+  
+  <!-- Title -->
+  <text x="150" y="30" text-anchor="middle" font-family="Arial" font-size="16" fill="black" font-weight="bold">Shopping List</text>
+  
+  <!-- List items -->
+  <text x="50" y="70" font-family="Arial" font-size="14" fill="black">• Milk</text>
+  <text x="50" y="100" font-family="Arial" font-size="14" fill="black">• Bread</text>
+  <text x="50" y="130" font-family="Arial" font-size="14" fill="black">• Eggs</text>
+  <text x="50" y="160" font-family="Arial" font-size="14" fill="black">• Apples</text>
+</svg> 

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="0" y="0" width="300" height="200" fill="white"/>
+  
+  <!-- Circle -->
+  <circle cx="150" cy="100" r="80" fill="#ffebee" stroke="#f44336" stroke-width="2"/>
+  
+  <!-- Label -->
+  <text x="150" y="50" text-anchor="middle" font-family="Arial" font-size="16" fill="#d32f2f">Red Things</text>
+  
+  <!-- Inside items -->
+  <text x="150" y="90" text-anchor="middle" font-family="Arial" font-size="14">Red Apple</text>
+  <text x="150" y="110" text-anchor="middle" font-family="Arial" font-size="14">Red Cherry</text>
+  <text x="150" y="130" text-anchor="middle" font-family="Arial" font-size="14">Red Strawberry</text>
+  
+  <!-- Outside items -->
+  <text x="40" y="50" text-anchor="middle" font-family="Arial" font-size="14">Green Apple</text>
+  <text x="260" y="150" text-anchor="middle" font-family="Arial" font-size="14">Yellow Banana</text>
+</svg> 

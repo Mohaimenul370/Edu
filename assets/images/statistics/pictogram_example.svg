@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="200" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="0" y="0" width="300" height="200" fill="white"/>
+  
+  <!-- Title -->
+  <text x="150" y="30" text-anchor="middle" font-family="Arial" font-size="16" fill="black" font-weight="bold">Pets in Our Class</text>
+  
+  <!-- Dogs -->
+  <text x="60" y="70" text-anchor="end" font-family="Arial" font-size="14" fill="black">Dogs</text>
+  <text x="80" y="70" text-anchor="start" font-family="Arial" font-size="24">🐕 🐕 🐕 🐕</text>
+  
+  <!-- Cats -->
+  <text x="60" y="110" text-anchor="end" font-family="Arial" font-size="14" fill="black">Cats</text>
+  <text x="80" y="110" text-anchor="start" font-family="Arial" font-size="24">🐱 🐱 🐱</text>
+  
+  <!-- Fish -->
+  <text x="60" y="150" text-anchor="end" font-family="Arial" font-size="14" fill="black">Fish</text>
+  <text x="80" y="150" text-anchor="start" font-family="Arial" font-size="24">🐠 🐠</text>
+  
+  <!-- Key -->
+  <text x="150" y="180" text-anchor="middle" font-family="Arial" font-size="12" fill="black">Each symbol = 1 pet</text>
+</svg> 

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150" height="200" viewBox="0 0 150 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- 1L Bottle -->
+  <g transform="translate(40,20)">
+    <!-- Bottle -->
+    <path d="M30,20 L70,20 L75,140 L25,140 Z" fill="#BBDEFB" stroke="#1976D2" stroke-width="2"/>
+    <!-- Liquid -->
+    <path d="M32,40 L68,40 L72,120 L28,120 Z" fill="#2196F3" fill-opacity="0.5"/>
+    <!-- Label -->
+    <rect x="35" y="70" width="30" height="20" fill="white" stroke="#1976D2"/>
+    <text x="50" y="84" text-anchor="middle" font-size="14">1L</text>
+  </g>
+</svg> 
