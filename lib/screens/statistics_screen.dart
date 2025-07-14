@@ -493,13 +493,9 @@ class _StatisticsScreenState extends State<StatisticsScreen>
                 children: [
                   ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.of(context).pop(); // Close dialog
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/statistics_1',
-                        (route) =>
-                            route.isFirst ||
-                            route.settings.name == '/main_menu',
-                      );
+                      Navigator.of(context).pop(); 
+                      Navigator.of(context).pop(); 
+                      
                     },
                     icon: const Icon(Icons.arrow_back),
                     label: const Text('Back'),
