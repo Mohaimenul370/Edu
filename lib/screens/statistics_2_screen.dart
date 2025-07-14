@@ -1,4 +1,7 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
+import 'package:kg_education_app/utils/utils_func.dart';
 import 'dart:math';
 import '../widgets/confetti_widget.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -392,7 +395,17 @@ Green ■■
               currentQuestionIndex++;
             } else {
               isCompleted = true;
-              _showCompletionDialog();
+              SharedPreferenceService.saveGameProgress(
+              'statistics_2',
+              score,
+              gameQuestions.length,
+            );
+            developer.log(
+                'Game progress saved for statistics_2: Score $score out of ${gameQuestions.length}');
+            setState(() {
+              SharedPreferenceService.updateOverallProgress();
+            });
+              showGameCompletionDialog(context, score, gameQuestions, setState, () {}, 'Statistics_2');
             }
           });
         }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:kg_education_app/utils/utils_func.dart';
 import 'dart:developer' as developer;
 import 'dart:math' as math;
 import '../services/preference_service.dart';
@@ -405,7 +406,7 @@ class _StatisticsScreenState extends State<StatisticsScreen>
             setState(() {
               SharedPreferenceService.updateOverallProgress();
             });
-            _showGameCompletionDialog();
+            showGameCompletionDialog(context, score, gameQuestions, setState, _startGame, 'Statistics_1');
           }
         }
       }
