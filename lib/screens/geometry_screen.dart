@@ -4,6 +4,7 @@ import 'dart:developer' as developer;
 import 'dart:math' as math;
 import '../services/shared_preference_service.dart';
 import 'package:flutter/services.dart';
+import '../utils/utils_func.dart';
 import './geometry_chapter_screen.dart';
 
 class GeometryConcept {
@@ -26,7 +27,7 @@ class GeometryConcept {
 
 class GeometryScreen extends StatefulWidget {
   final bool isGameMode;
-  
+
   const GeometryScreen({
     super.key,
     required this.isGameMode,
@@ -36,7 +37,8 @@ class GeometryScreen extends StatefulWidget {
   State<GeometryScreen> createState() => _GeometryScreenState();
 }
 
-class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStateMixin {
+class _GeometryScreenState extends State<GeometryScreen>
+    with TickerProviderStateMixin {
   final FlutterTts flutterTts = FlutterTts();
   bool isGameMode = false;
   int score = 0;
@@ -57,7 +59,8 @@ class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStat
     GeometryConcept(
       name: 'Introduction to 3D Shapes',
       visual: _build3DShapeVisual('intro'),
-      description: 'We live inside 3D shapes and have them all around us. You can hold a 3D shape in your hand.',
+      description:
+          'We live inside 3D shapes and have them all around us. You can hold a 3D shape in your hand.',
       options: ['True', 'False'],
       section: '3D Shapes',
       exercise: 'Look around your room. Can you spot any 3D shapes?',
@@ -65,7 +68,8 @@ class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStat
     GeometryConcept(
       name: 'Parts of 3D Shapes',
       visual: _build3DShapeVisual('parts'),
-      description: '3D shapes have faces and edges. Some have flat faces, others have curved surfaces.',
+      description:
+          '3D shapes have faces and edges. Some have flat faces, others have curved surfaces.',
       options: ['Face', 'Edge', 'Surface', 'All of these'],
       section: '3D Shapes',
       exercise: 'Touch a face and an edge on a 3D shape.',
@@ -94,12 +98,13 @@ class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStat
       section: '3D Shapes',
       exercise: 'Compare how a sphere and cylinder roll.',
     ),
-    
+
     // 2D Shapes Section
     GeometryConcept(
       name: 'Introduction to 2D Shapes',
       visual: _build2DShapeVisual('intro'),
-      description: '2D shapes are flat. This makes them different from 3D shapes.',
+      description:
+          '2D shapes are flat. This makes them different from 3D shapes.',
       options: ['True', 'False'],
       section: '2D Shapes',
       exercise: 'Can you hold a 2D shape in your hand?',
@@ -131,7 +136,8 @@ class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStat
     GeometryConcept(
       name: 'Rectangle',
       visual: _build2DShapeVisual('rectangle'),
-      description: 'A rectangle has 4 straight sides, with opposite sides equal.',
+      description:
+          'A rectangle has 4 straight sides, with opposite sides equal.',
       options: ['4 sides', '3 sides', '5 sides', '6 sides'],
       section: '2D Shapes',
       exercise: 'How is a rectangle different from a square?',
@@ -142,7 +148,7 @@ class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStat
   void initState() {
     super.initState();
     _initializeTts();
-    
+
     // Initialize the main animation controller
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 500),
@@ -154,7 +160,7 @@ class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStat
         curve: Curves.easeInOut,
       ),
     );
-    
+
     // Initialize the option animation controller
     _optionAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -166,7 +172,7 @@ class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStat
         curve: Curves.easeInOut,
       ),
     );
-    
+
     if (widget.isGameMode) {
       _startGame();
     }
@@ -197,51 +203,56 @@ class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStat
       currentQuestion = 0;
       selectedAnswer = null;
       showResult = false;
-      
+
       // Simplified questions for better understanding
       final gameQuestions = [
         GeometryConcept(
-          name: '6 faces',  // Changed from 'Cube Properties' to match the correct answer
+          name:
+              '6 faces', // Changed from 'Cube Properties' to match the correct answer
           visual: _build3DShapeVisual('cube'),
-          description: 'How many faces does a cube have?',  // Simplified question
+          description:
+              'How many faces does a cube have?', // Simplified question
           options: ['6 faces', '4 faces', '8 faces', '12 faces'],
           section: '3D Shapes',
           exercise: null,
         ),
         GeometryConcept(
-          name: 'Can roll',  // Changed to match the correct answer
+          name: 'Can roll', // Changed to match the correct answer
           visual: _build3DShapeVisual('sphere'),
-          description: 'What can a sphere do?',  // Simplified question
+          description: 'What can a sphere do?', // Simplified question
           options: ['Can roll', 'Has edges', 'Has corners', 'Is flat'],
           section: '3D Shapes',
           exercise: null,
         ),
         GeometryConcept(
-          name: 'Curved sides',  // Changed to match the correct answer
+          name: 'Curved sides', // Changed to match the correct answer
           visual: _build2DShapeVisual('circle'),
-          description: 'What type of sides does a circle have?',  // Simplified question
+          description:
+              'What type of sides does a circle have?', // Simplified question
           options: ['Curved sides', 'Straight sides', 'No sides', 'Four sides'],
           section: '2D Shapes',
           exercise: null,
         ),
         GeometryConcept(
-          name: '4 sides',  // Changed to match the correct answer
+          name: '4 sides', // Changed to match the correct answer
           visual: _build2DShapeVisual('square'),
-          description: 'How many sides does a square have?',  // Simplified question
+          description:
+              'How many sides does a square have?', // Simplified question
           options: ['4 sides', '3 sides', '5 sides', '6 sides'],
           section: '2D Shapes',
           exercise: null,
         ),
         GeometryConcept(
-          name: '3 sides',  // Changed to match the correct answer
+          name: '3 sides', // Changed to match the correct answer
           visual: _build2DShapeVisual('triangle'),
-          description: 'How many sides does a triangle have?',  // Simplified question
+          description:
+              'How many sides does a triangle have?', // Simplified question
           options: ['3 sides', '4 sides', '5 sides', '6 sides'],
           section: '2D Shapes',
           exercise: null,
         ),
       ];
-      
+
       final random = math.Random();
       shuffledConcepts = List.from(gameQuestions)..shuffle(random);
       for (var concept in shuffledConcepts) {
@@ -256,7 +267,7 @@ class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStat
     });
   }
 
-  void _checkAnswer(String answer) {
+  void _checkAnswer(String answer) async {
     setState(() {
       selectedAnswer = answer;
       showResult = true;
@@ -275,7 +286,7 @@ class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStat
     });
 
     // Wait for 1.5 seconds before moving to next question
-    Future.delayed(const Duration(milliseconds: 1500), () {
+    Future.delayed(const Duration(milliseconds: 1000), () async {
       if (currentQuestion < 4) {
         setState(() {
           currentQuestion++;
@@ -283,12 +294,25 @@ class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStat
           showResult = false;
         });
       } else {
-        _showCompletionDialog();
+        if (mounted) {
+          await SharedPreferenceService.saveGameProgress(
+            'geometry',
+            score,
+            shuffledConcepts.length,
+          );
+          developer.log(
+              'Game progress saved for geometry: Score $score out of ${shuffledConcepts.length}');
+          setState(() {
+            SharedPreferenceService.updateOverallProgress();
+          });
+          showGameCompletionDialog(context, score, shuffledConcepts, setState,
+              _startGame, 'geometry');
+        }
       }
     });
   }
 
-  void _showCompletionDialog() {
+/*  void _showCompletionDialog() {
     final percentage = (score / 5) * 100;
     
     // Save game progress
@@ -451,12 +475,13 @@ class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStat
         );
       },
     );
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
-    final filteredConcepts = concepts.where((c) => c.section == selectedSection).toList();
-    
+    final filteredConcepts =
+        concepts.where((c) => c.section == selectedSection).toList();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.isGameMode ? 'Geometry Game' : 'Learning Geometry'),
@@ -480,31 +505,39 @@ class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStat
                 children: [
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: selectedSection == '3D Shapes' ? Colors.purple : Colors.grey,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      backgroundColor: selectedSection == '3D Shapes'
+                          ? Colors.purple
+                          : Colors.grey,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
                     ),
-                    onPressed: () => setState(() => selectedSection = '3D Shapes'),
+                    onPressed: () =>
+                        setState(() => selectedSection = '3D Shapes'),
                     child: const Text('3D Shapes'),
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: selectedSection == '2D Shapes' ? Colors.purple : Colors.grey,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      backgroundColor: selectedSection == '2D Shapes'
+                          ? Colors.purple
+                          : Colors.grey,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
                     ),
-                    onPressed: () => setState(() => selectedSection = '2D Shapes'),
+                    onPressed: () =>
+                        setState(() => selectedSection = '2D Shapes'),
                     child: const Text('2D Shapes'),
                   ),
                 ],
               ),
             ),
-            
+
             // Section Introduction
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Text(
                 selectedSection == '3D Shapes'
-                  ? 'We live inside 3D shapes and have them all around us. Let\'s explore them!'
-                  : '2D shapes are flat and make patterns in our world. Let\'s discover them!',
+                    ? 'We live inside 3D shapes and have them all around us. Let\'s explore them!'
+                    : '2D shapes are flat and make patterns in our world. Let\'s discover them!',
                 style: const TextStyle(
                   fontSize: 16,
                   fontStyle: FontStyle.italic,
@@ -513,12 +546,12 @@ class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStat
               ),
             ),
           ],
-          
+
           // Content Area
           Expanded(
-            child: widget.isGameMode 
-              ? _buildGameMode()
-              : _buildLessonMode(filteredConcepts),
+            child: widget.isGameMode
+                ? _buildGameMode()
+                : _buildLessonMode(filteredConcepts),
           ),
         ],
       ),
@@ -589,7 +622,8 @@ class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStat
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(Icons.extension, color: Colors.purple),
+                          child:
+                              const Icon(Icons.extension, color: Colors.purple),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -709,68 +743,76 @@ class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStat
                 final index = entry.key;
                 final option = entry.value;
                 final isSelected = selectedAnswer == option;
-                final isCorrect = showResult && option == shuffledConcepts[currentQuestion].name;
-                final isIncorrect = showResult && isSelected && option != shuffledConcepts[currentQuestion].name;
-                
+                final isCorrect = showResult &&
+                    option == shuffledConcepts[currentQuestion].name;
+                final isIncorrect = showResult &&
+                    isSelected &&
+                    option != shuffledConcepts[currentQuestion].name;
+
                 return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                    child: AnimatedBuilder(
-                      animation: _optionAnimationController,
-                      builder: (context, child) {
-                        return Transform.scale(
-                          scale: isSelected ? _optionScaleAnimation.value : 1.0,
-                          child: Material(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child: AnimatedBuilder(
+                    animation: _optionAnimationController,
+                    builder: (context, child) {
+                      return Transform.scale(
+                        scale: isSelected ? _optionScaleAnimation.value : 1.0,
+                        child: Material(
+                          borderRadius: BorderRadius.circular(12),
+                          elevation: isSelected ? 4 : 1,
+                          child: InkWell(
+                            onTap:
+                                showResult ? null : () => _checkAnswer(option),
                             borderRadius: BorderRadius.circular(12),
-                            elevation: isSelected ? 4 : 1,
-                            child: InkWell(
-                              onTap: showResult ? null : () => _checkAnswer(option),
-                              borderRadius: BorderRadius.circular(12),
-                              child: Container(
-                                width: double.infinity,
-                                height: 56,
-                                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              width: double.infinity,
+                              height: 56,
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 14, horizontal: 20),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: isCorrect
+                                    ? Colors.green.withOpacity(0.2)
+                                    : isIncorrect
+                                        ? Colors.red.withOpacity(0.2)
+                                        : Colors.white,
+                                border: Border.all(
                                   color: isCorrect
-                                      ? Colors.green.withOpacity(0.2)
+                                      ? Colors.green
                                       : isIncorrect
-                                          ? Colors.red.withOpacity(0.2)
-                                          : Colors.white,
-                                  border: Border.all(
+                                          ? Colors.red
+                                          : isSelected
+                                              ? Colors.purple
+                                              : Colors.grey.shade300,
+                                  width: isSelected ? 2 : 1,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  option,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
                                     color: isCorrect
                                         ? Colors.green
                                         : isIncorrect
-                                            ? Colors.red
+                                            ? Colors.white
                                             : isSelected
                                                 ? Colors.purple
-                                                : Colors.grey.shade300,
-                                    width: isSelected ? 2 : 1,
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    option,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                      color: isCorrect
-                                          ? Colors.green
-                                          : isIncorrect
-                                              ? Colors.white
-                                              : isSelected
-                                                  ? Colors.purple
-                                                  : Colors.black87,
-                                    ),
+                                                : Colors.black87,
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        );
-                      },
-                    ),
-                  );
-                }).toList(),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }).toList(),
             ),
           ),
         ],
@@ -780,32 +822,31 @@ class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStat
 
   Widget _buildGameComplete() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showCompletionDialog();
+      showGameCompletionDialog(
+          context, score, shuffledConcepts, setState, _startGame, 'geometry');
     });
-    
+
     return const Center(
       child: CircularProgressIndicator(),
     );
   }
 
-
-
   Color _getOptionColor(String option) {
     if (!showResult) {
       return Colors.purple;
     }
-    
+
     // If this is the selected answer
     if (option == selectedAnswer) {
       // Show green for correct, red for incorrect
       return isCorrect ? Colors.green : Colors.red;
     }
-    
+
     // If user selected wrong answer, highlight the correct one
     if (!isCorrect && option == shuffledConcepts[currentQuestion].name) {
       return Colors.green;
     }
-    
+
     // Other options should be dimmed
     return Colors.grey.withOpacity(0.5);
   }
@@ -857,9 +898,9 @@ class _GeometryScreenState extends State<GeometryScreen> with TickerProviderStat
 
 class ThreeDShapePainter extends CustomPainter {
   final String type;
-  
+
   ThreeDShapePainter(this.type);
-  
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
@@ -889,34 +930,34 @@ class ThreeDShapePainter extends CustomPainter {
   void _drawCube(Canvas canvas, Size size, Paint paint) {
     final center = Offset(size.width / 2, size.height / 2);
     final side = size.width * 0.4;
-    
+
     // Front face
     final frontPath = Path()
-      ..moveTo(center.dx - side/2, center.dy - side/2)
-      ..lineTo(center.dx + side/2, center.dy - side/2)
-      ..lineTo(center.dx + side/2, center.dy + side/2)
-      ..lineTo(center.dx - side/2, center.dy + side/2)
+      ..moveTo(center.dx - side / 2, center.dy - side / 2)
+      ..lineTo(center.dx + side / 2, center.dy - side / 2)
+      ..lineTo(center.dx + side / 2, center.dy + side / 2)
+      ..lineTo(center.dx - side / 2, center.dy + side / 2)
       ..close();
-    
+
     // Back face
     final backPath = Path()
-      ..moveTo(center.dx - side/4, center.dy - side/1.5)
-      ..lineTo(center.dx + side/1.5, center.dy - side/1.5)
-      ..lineTo(center.dx + side/1.5, center.dy + side/4)
-      ..lineTo(center.dx - side/4, center.dy + side/4)
+      ..moveTo(center.dx - side / 4, center.dy - side / 1.5)
+      ..lineTo(center.dx + side / 1.5, center.dy - side / 1.5)
+      ..lineTo(center.dx + side / 1.5, center.dy + side / 4)
+      ..lineTo(center.dx - side / 4, center.dy + side / 4)
       ..close();
-    
+
     // Connecting lines
     final connectPath = Path()
-      ..moveTo(center.dx - side/2, center.dy - side/2)
-      ..lineTo(center.dx - side/4, center.dy - side/1.5)
-      ..moveTo(center.dx + side/2, center.dy - side/2)
-      ..lineTo(center.dx + side/1.5, center.dy - side/1.5)
-      ..moveTo(center.dx + side/2, center.dy + side/2)
-      ..lineTo(center.dx + side/1.5, center.dy + side/4)
-      ..moveTo(center.dx - side/2, center.dy + side/2)
-      ..lineTo(center.dx - side/4, center.dy + side/4);
-    
+      ..moveTo(center.dx - side / 2, center.dy - side / 2)
+      ..lineTo(center.dx - side / 4, center.dy - side / 1.5)
+      ..moveTo(center.dx + side / 2, center.dy - side / 2)
+      ..lineTo(center.dx + side / 1.5, center.dy - side / 1.5)
+      ..moveTo(center.dx + side / 2, center.dy + side / 2)
+      ..lineTo(center.dx + side / 1.5, center.dy + side / 4)
+      ..moveTo(center.dx - side / 2, center.dy + side / 2)
+      ..lineTo(center.dx - side / 4, center.dy + side / 4);
+
     canvas.drawPath(frontPath, paint);
     canvas.drawPath(backPath, paint);
     canvas.drawPath(connectPath, paint);
@@ -926,36 +967,36 @@ class ThreeDShapePainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width * 0.2;
     final height = size.height * 0.4;
-    
+
     // Top ellipse
     canvas.drawOval(
       Rect.fromCenter(
-        center: center.translate(0, -height/2),
+        center: center.translate(0, -height / 2),
         width: radius * 2,
         height: radius,
       ),
       paint,
     );
-    
+
     // Bottom ellipse
     canvas.drawOval(
       Rect.fromCenter(
-        center: center.translate(0, height/2),
+        center: center.translate(0, height / 2),
         width: radius * 2,
         height: radius,
       ),
       paint,
     );
-    
+
     // Side lines
     canvas.drawLine(
-      center.translate(-radius, -height/2),
-      center.translate(-radius, height/2),
+      center.translate(-radius, -height / 2),
+      center.translate(-radius, height / 2),
       paint,
     );
     canvas.drawLine(
-      center.translate(radius, -height/2),
-      center.translate(radius, height/2),
+      center.translate(radius, -height / 2),
+      center.translate(radius, height / 2),
       paint,
     );
   }
@@ -963,10 +1004,10 @@ class ThreeDShapePainter extends CustomPainter {
   void _drawSphere(Canvas canvas, Size size, Paint paint) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width * 0.3;
-    
+
     // Main circle
     canvas.drawCircle(center, radius, paint);
-    
+
     // Ellipses for 3D effect
     canvas.drawOval(
       Rect.fromCenter(
@@ -991,31 +1032,31 @@ class ThreeDShapePainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final width = size.width * 0.4;
     final height = size.height * 0.4;
-    
+
     // Front face
     final frontPath = Path()
-      ..moveTo(center.dx - width/2, center.dy + height/2)
-      ..lineTo(center.dx - width/2, center.dy - height/2)
+      ..moveTo(center.dx - width / 2, center.dy + height / 2)
+      ..lineTo(center.dx - width / 2, center.dy - height / 2)
       ..lineTo(center.dx, center.dy - height)
-      ..lineTo(center.dx + width/2, center.dy - height/2)
-      ..lineTo(center.dx + width/2, center.dy + height/2)
+      ..lineTo(center.dx + width / 2, center.dy - height / 2)
+      ..lineTo(center.dx + width / 2, center.dy + height / 2)
       ..close();
-    
+
     canvas.drawPath(frontPath, paint);
-    
+
     // Side face
     final sidePath = Path()
-      ..moveTo(center.dx + width/2, center.dy - height/2)
-      ..lineTo(center.dx + width, center.dy - height/3)
-      ..lineTo(center.dx + width, center.dy + height/1.5)
-      ..lineTo(center.dx + width/2, center.dy + height/2);
-    
+      ..moveTo(center.dx + width / 2, center.dy - height / 2)
+      ..lineTo(center.dx + width, center.dy - height / 3)
+      ..lineTo(center.dx + width, center.dy + height / 1.5)
+      ..lineTo(center.dx + width / 2, center.dy + height / 2);
+
     canvas.drawPath(sidePath, paint);
-    
+
     // Roof side
     canvas.drawLine(
       center.translate(0, -height),
-      center.translate(width/2, -height/3),
+      center.translate(width / 2, -height / 3),
       paint,
     );
   }
@@ -1023,7 +1064,7 @@ class ThreeDShapePainter extends CustomPainter {
   void _drawParts3D(Canvas canvas, Size size, Paint paint) {
     // Draw a cube with labeled parts
     _drawCube(canvas, size, paint);
-    
+
     final textPainter = TextPainter(
       textDirection: TextDirection.ltr,
       text: const TextSpan(
@@ -1034,10 +1075,10 @@ class ThreeDShapePainter extends CustomPainter {
         ),
       ),
     );
-    
+
     textPainter.layout();
     textPainter.paint(canvas, Offset(size.width * 0.7, size.height * 0.3));
-    
+
     textPainter.text = const TextSpan(
       text: 'Edge',
       style: TextStyle(
@@ -1045,7 +1086,7 @@ class ThreeDShapePainter extends CustomPainter {
         fontSize: 12,
       ),
     );
-    
+
     textPainter.layout();
     textPainter.paint(canvas, Offset(size.width * 0.3, size.height * 0.7));
   }
@@ -1056,9 +1097,9 @@ class ThreeDShapePainter extends CustomPainter {
 
 class TwoDShapePainter extends CustomPainter {
   final String type;
-  
+
   TwoDShapePainter(this.type);
-  
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
@@ -1094,7 +1135,7 @@ class TwoDShapePainter extends CustomPainter {
     final side = size.width * 0.6;
     final left = (size.width - side) / 2;
     final top = (size.height - side) / 2;
-    
+
     canvas.drawRect(
       Rect.fromLTWH(left, top, side, side),
       paint,
@@ -1107,7 +1148,7 @@ class TwoDShapePainter extends CustomPainter {
       ..lineTo(size.width * 0.2, size.height * 0.8)
       ..lineTo(size.width * 0.8, size.height * 0.8)
       ..close();
-    
+
     canvas.drawPath(path, paint);
   }
 
@@ -1116,7 +1157,7 @@ class TwoDShapePainter extends CustomPainter {
     final height = size.height * 0.4;
     final left = (size.width - width) / 2;
     final top = (size.height - height) / 2;
-    
+
     canvas.drawRect(
       Rect.fromLTWH(left, top, width, height),
       paint,
@@ -1132,4 +1173,4 @@ class TwoDShapePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-} 
+}

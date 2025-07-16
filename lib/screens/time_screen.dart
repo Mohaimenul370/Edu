@@ -552,8 +552,7 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
   Widget _buildGameModeScreen() {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pushReplacementNamed(context, '/time');
-        return false;
+        return true; // Allow default back behavior
       },
       child: Scaffold(
         appBar: AppBar(

@@ -540,14 +540,7 @@ class _StatisticsScreenState extends State<StatisticsScreen>
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        if (isGameMode) {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            '/statistics_1',
-            (route) => route.isFirst || route.settings.name == '/main_menu',
-          );
-          return false;
-        }
-        return true;
+        return true; // Allow default back behavior
       },
       child: Scaffold(
         appBar: AppBar(

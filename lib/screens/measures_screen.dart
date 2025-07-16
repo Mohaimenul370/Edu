@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:kg_education_app/utils/utils_func.dart';
 import 'dart:developer' as developer;
 import 'dart:math' as math;
 import '../services/preference_service.dart';
@@ -570,7 +571,7 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
       }
     });
 
-    Future.delayed(const Duration(milliseconds: 1000), () {
+    Future.delayed(const Duration(milliseconds: 1000), () async {
       if (mounted) {
         if (currentQuestion < shuffledGames.length - 1) {
           setState(() {
@@ -580,13 +581,25 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
           });
         } else {
           // Show completion dialog after the last question
-          _showCompletionDialog();
+          if (mounted) {
+            await SharedPreferenceService.saveGameProgress(
+              'measures',
+              score,
+              shuffledGames.length,
+            );
+            developer.log('Game progress saved for measures: Score $score out of ${shuffledGames.length}');
+            setState(() {
+              SharedPreferenceService.updateOverallProgress();
+            });
+            showGameCompletionDialog(context, score, shuffledGames, setState, _startGame, 'measures');
+          }
+        }
         }
       }
-    });
+    );
   }
 
-  void _showCompletionDialog() {
+  /*void _showCompletionDialog() {
     final percentage = (score / shuffledGames.length) * 100;
     
     // Save progress immediately when game is complete
@@ -750,7 +763,7 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
         ),
       ),
     );
-  }
+  }*/
 
   @override
   void dispose() {
