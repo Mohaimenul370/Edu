@@ -1,6 +1,7 @@
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:kg_education_app/utils/utils_func.dart';
 import 'dart:math';
 import '../main.dart';
 import '../services/shared_preference_service.dart';
@@ -289,7 +290,7 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
           SharedPreferenceService.saveGameProgress('time', score, gameQuestions.length).then((_) {
             developer.log('Time screen progress saved successfully');
             // Show game complete dialog
-            _showGameCompleteDialog();
+            showGameCompletionDialog(context, score, gameQuestions, setState, _startGame, 'Time');
           });
         }
       }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:kg_education_app/utils/utils_func.dart';
 import 'dart:developer' as developer;
 import 'dart:math' as math;
 import '../services/preference_service.dart';
@@ -335,181 +336,14 @@ class _Measures2ScreenState extends State<Measures2Screen> with TickerProviderSt
         );
       });
     } else {
-      _showCompletionDialog();
+      SharedPreferenceService.saveGameProgress(
+          'measures_2',
+          score,
+          practiceQuestions.length,
+        );
+        SharedPreferenceService.updateOverallProgress();
+      showGameCompletionDialog(context, score, practiceQuestions, setState, () {}, 'Measures_2');
     }
-  }
-
-  void _showCompletionDialog() {
-    final percentage = (score / practiceQuestions.length) * 100;
-    
-    // Save the game progress
-    SharedPreferenceService.saveGameProgress('measures_2', score, practiceQuestions.length);
-    
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => WillPopScope(
-        onWillPop: () async => false,
-        child: Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.emoji_events,
-                    size: 48,
-                    color: Colors.green,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Congratulations!',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  decoration: BoxDecoration(
-                    color: Color(0xFF7B2FF2).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    children: [
-                      const Text(
-                        'Your Score',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF7B2FF2),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '$score / ${practiceQuestions.length}',
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF7B2FF2),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${percentage.toStringAsFixed(0)}%',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orange,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  percentage >= 80 
-                      ? 'Great job! You\'ve mastered these measurements!'
-                      : percentage >= 60
-                          ? 'Good work! Keep practicing!'
-                          : 'Nice try! Practice makes perfect!',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close dialog
-                          Navigator.of(context).pop(); // Return to previous screen
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF7B2FF2),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.arrow_back, size: 18),
-                            SizedBox(width: 8),
-                            Text('Back'),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close dialog
-                          setState(() {
-                            score = 0;
-                            currentQuestion = 0;
-                            selectedAnswer = '';
-                            showResult = false;
-                            _isAnswering = false;
-                            _initializeQuestions(); // Reinitialize with shuffled questions
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.refresh, size: 18),
-                            SizedBox(width: 8),
-                            Text('Play Again'),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   @override

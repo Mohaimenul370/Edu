@@ -24,7 +24,7 @@ class _Statistics2ScreenState extends State<Statistics2Screen> {
   bool showWrongAnimation = false;
   int score = 0;
   String? selectedAnswer;
-  
+
   // Section 1: Venn diagrams, Carroll diagrams, and pictograms
   final List<Map<String, dynamic>> section1Lessons = [
     {
@@ -131,37 +131,50 @@ Green ■■
     {
       'question': 'Which type of diagram is shown below?',
       'image': 'assets/images/statistics/venn_diagram_example.svg',
-      'options': ['Venn diagram', 'Carroll diagram', 'Block graph', 'Pictogram'],
+      'options': [
+        'Venn diagram',
+        'Carroll diagram',
+        'Block graph',
+        'Pictogram'
+      ],
       'correctAnswer': 'Venn diagram',
-      'explanation': 'This is a Venn diagram. It uses circles to sort and show data. Things that belong to a group go inside the circle.',
+      'explanation':
+          'This is a Venn diagram. It uses circles to sort and show data. Things that belong to a group go inside the circle.',
     },
     {
-      'question': 'In this Carroll diagram, where would you put a triangle with straight sides?',
+      'question':
+          'In this Carroll diagram, where would you put a triangle with straight sides?',
       'image': 'assets/images/statistics/carroll_diagram_example.svg',
       'options': ['Left side', 'Right side', 'Outside', 'Both sides'],
       'correctAnswer': 'Right side',
-      'explanation': 'A triangle has straight sides, so it belongs in the right side of the Carroll diagram which shows shapes with straight sides.',
+      'explanation':
+          'A triangle has straight sides, so it belongs in the right side of the Carroll diagram which shows shapes with straight sides.',
     },
     {
-      'question': 'Looking at this block graph, which color is the most popular?',
+      'question':
+          'Looking at this block graph, which color is the most popular?',
       'image': 'assets/images/statistics/block_graph_example.svg',
       'options': ['Red', 'Blue', 'Green', 'Yellow'],
       'correctAnswer': 'Blue',
-      'explanation': 'Blue has 4 blocks, which is more than Red (3 blocks) and Green (2 blocks).',
+      'explanation':
+          'Blue has 4 blocks, which is more than Red (3 blocks) and Green (2 blocks).',
     },
     {
-      'question': 'In this table, how many vanilla ice creams were sold on Tuesday?',
+      'question':
+          'In this table, how many vanilla ice creams were sold on Tuesday?',
       'image': 'assets/images/statistics/table_example.svg',
       'options': ['3', '4', '6', '5'],
       'correctAnswer': '6',
-      'explanation': 'Looking at the table, on Tuesday there were 6 vanilla ice creams sold.',
+      'explanation':
+          'Looking at the table, on Tuesday there were 6 vanilla ice creams sold.',
     },
     {
       'question': 'In this pictogram, which pet has the most symbols?',
       'image': 'assets/images/statistics/pictogram_example.svg',
       'options': ['Dogs', 'Cats', 'Fish', 'Birds'],
       'correctAnswer': 'Dogs',
-      'explanation': 'Dogs has 4 symbols, which is more than Cats (3 symbols) and Fish (2 symbols).',
+      'explanation':
+          'Dogs has 4 symbols, which is more than Cats (3 symbols) and Fish (2 symbols).',
     },
   ];
 
@@ -186,9 +199,11 @@ Green ■■
     // Calculate percentage score
     final percentage = (score / gameQuestions.length) * 100;
     final isPassed = percentage >= 50.0;
-    
+
     // Save the game progress (SharedPreferenceService handles the 50% threshold automatically)
-    SharedPreferenceService.saveGameProgress('statistics_2', score, gameQuestions.length).then((_) {
+    SharedPreferenceService.saveGameProgress(
+            'statistics_2', score, gameQuestions.length)
+        .then((_) {
       _showDialog(percentage, isPassed);
     }).catchError((error) {
       print('Error saving game progress: $error');
@@ -246,7 +261,8 @@ Green ■■
                 ),
                 const SizedBox(height: 16),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                   decoration: BoxDecoration(
                     color: Color(0xFF7B2FF2).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -284,7 +300,7 @@ Green ■■
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  percentage >= 80 
+                  percentage >= 80
                       ? 'Great job! You\'ve mastered statistics!'
                       : percentage >= 60
                           ? 'Good work! Keep practicing!'
@@ -367,8 +383,9 @@ Green ■■
   }
 
   void _checkAnswer(String answer) {
-    bool isCorrect = answer == gameQuestions[currentQuestionIndex]['correctAnswer'];
-    
+    bool isCorrect =
+        answer == gameQuestions[currentQuestionIndex]['correctAnswer'];
+
     setState(() {
       selectedAnswer = answer;
       if (isCorrect) {
@@ -381,7 +398,7 @@ Green ■■
         showCorrectAnimation = false;
         showConfetti = false;
       }
-      
+
       // Advance to next question after delay for both correct and wrong answers
       Future.delayed(const Duration(seconds: 1), () {
         if (mounted) {
@@ -390,22 +407,22 @@ Green ■■
             showWrongAnimation = false;
             showConfetti = false;
             selectedAnswer = null;
-            
+
             if (currentQuestionIndex < gameQuestions.length - 1) {
               currentQuestionIndex++;
             } else {
               isCompleted = true;
               SharedPreferenceService.saveGameProgress(
-              'statistics_2',
-              score,
-              gameQuestions.length,
-            );
-            developer.log(
-                'Game progress saved for statistics_2: Score $score out of ${gameQuestions.length}');
-            setState(() {
-              SharedPreferenceService.updateOverallProgress();
-            });
-              showGameCompletionDialog(context, score, gameQuestions, setState, () {}, 'Statistics_2');
+                'statistics_2',
+                score,
+                gameQuestions.length,
+              );
+              developer.log(
+                  'Game progress saved for statistics_2: Score $score out of ${gameQuestions.length}');
+              setState(() {
+                SharedPreferenceService.updateOverallProgress();
+              });
+              _showCompletionDialog();
             }
           });
         }
@@ -443,7 +460,8 @@ Green ■■
   }
 
   Widget _buildLessonCard(Map<String, dynamic> lesson) {
-    print('Building lesson card for: ${lesson['title']} with example: ${lesson['example']}');
+    print(
+        'Building lesson card for: ${lesson['title']} with example: ${lesson['example']}');
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -493,13 +511,15 @@ Green ■■
                       Builder(
                         builder: (context) {
                           try {
-                            print('Attempting to load SVG: ${lesson['example']}');
+                            print(
+                                'Attempting to load SVG: ${lesson['example']}');
                             return SvgPicture.asset(
                               lesson['example'],
                               height: 200,
                               width: 200,
                               fit: BoxFit.contain,
-                              placeholderBuilder: (BuildContext context) => Container(
+                              placeholderBuilder: (BuildContext context) =>
+                                  Container(
                                 height: 200,
                                 width: 200,
                                 color: Colors.grey[200],
@@ -519,17 +539,21 @@ Green ■■
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(Icons.error_outline, color: Colors.red, size: 40),
+                                  const Icon(Icons.error_outline,
+                                      color: Colors.red, size: 40),
                                   const SizedBox(height: 8),
                                   Text(
                                     'Error loading image',
                                     style: TextStyle(color: Colors.red[900]),
                                   ),
-                                  if (e.toString().contains('Unable to load asset')) ...[
+                                  if (e
+                                      .toString()
+                                      .contains('Unable to load asset')) ...[
                                     const SizedBox(height: 4),
                                     Text(
                                       'Asset not found',
-                                      style: TextStyle(color: Colors.red[900], fontSize: 12),
+                                      style: TextStyle(
+                                          color: Colors.red[900], fontSize: 12),
                                     ),
                                   ],
                                 ],
@@ -561,7 +585,7 @@ Green ■■
   Widget _buildGameMode() {
     return Stack(
       children: [
-        if (showConfetti) const ConfettiWidget(),
+        // ConfettiWidget removed as part of unused code cleanup
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -578,7 +602,8 @@ Green ■■
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.purple[50],
                       borderRadius: BorderRadius.circular(15),
@@ -624,27 +649,39 @@ Green ■■
               ],
               Expanded(
                 child: ListView.builder(
-                  itemCount: (gameQuestions[currentQuestionIndex]['options'] as List<String>).length,
+                  itemCount: (gameQuestions[currentQuestionIndex]['options']
+                          as List<String>)
+                      .length,
                   itemBuilder: (context, index) {
-                    final option = gameQuestions[currentQuestionIndex]['options'][index];
+                    final option =
+                        gameQuestions[currentQuestionIndex]['options'][index];
                     final isSelected = option == selectedAnswer;
-                    final isCorrect = option == gameQuestions[currentQuestionIndex]['correctAnswer'];
-                    
+                    final isCorrect = option ==
+                        gameQuestions[currentQuestionIndex]['correctAnswer'];
+
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 16),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
                         transform: Matrix4.identity()
-                          ..scale(showWrongAnimation && isSelected ? 0.95 : 1.0),
+                          ..scale(
+                              showWrongAnimation && isSelected ? 0.95 : 1.0),
                         child: ElevatedButton(
-                          onPressed: (showCorrectAnimation || showWrongAnimation) ? null : () => _checkAnswer(option),
+                          onPressed:
+                              (showCorrectAnimation || showWrongAnimation)
+                                  ? null
+                                  : () => _checkAnswer(option),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.all(16),
                             backgroundColor: isSelected
-                                ? (isCorrect ? Colors.green[50] : Colors.red[50])
+                                ? (isCorrect
+                                    ? Colors.green[50]
+                                    : Colors.red[50])
                                 : Colors.white,
                             foregroundColor: isSelected
-                                ? (isCorrect ? Colors.green[700] : Colors.red[700])
+                                ? (isCorrect
+                                    ? Colors.green[700]
+                                    : Colors.red[700])
                                 : Colors.purple,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -660,7 +697,9 @@ Green ■■
                             option,
                             style: TextStyle(
                               fontSize: 16,
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
                             ),
                           ),
                         ),

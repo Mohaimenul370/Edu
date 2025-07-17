@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:kg_education_app/utils/utils_func.dart';
 import 'dart:developer' as developer;
 import '../services/preference_service.dart';
 import '../services/game_progress_service.dart';
@@ -543,7 +544,7 @@ class _Time2ScreenState extends State<Time2Screen> with TickerProviderStateMixin
         });
       } else {
         Future.delayed(const Duration(milliseconds: 800), () {
-          _showCompletionDialog();
+          showGameCompletionDialog(context, score, gameQuestions, setState, _startGame, 'Time_2');
         });
       }
     });
@@ -561,135 +562,11 @@ class _Time2ScreenState extends State<Time2Screen> with TickerProviderStateMixin
         _speakText('Next question!');
       } else {
         SharedPreferenceService.saveGameProgress('time_2', score, gameQuestions.length);
-        _showCompletionDialog();
+        showGameCompletionDialog(context, score, gameQuestions, setState, _startGame, 'Time_2');
       }
     });
   }
 
-  void _showCompletionDialog() {
-    final percentage = (score / gameQuestions.length) * 100;
-    final isPassed = percentage >= 50.0;
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-              // Header with Icon
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isPassed 
-                    ? Colors.green.withOpacity(0.1)
-                    : Colors.orange.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  isPassed ? Icons.emoji_events : Icons.school,
-                size: 48,
-                  color: isPassed ? Colors.green : Colors.orange,
-                ),
-              ),
-              const SizedBox(height: 24),
-              // Title
-              Text(
-                isPassed ? 'Congratulations!' : 'Keep Practicing!',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: isPassed ? Colors.green : Colors.orange,
-                ),
-              ),
-            const SizedBox(height: 16),
-              // Score Display
-            Text(
-                'Score: $score/${gameQuestions.length} (${percentage.toStringAsFixed(1)}%)',
-                style: const TextStyle(
-                  fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              const SizedBox(height: 16),
-              // Message
-              Text(
-                isPassed
-                  ? 'You\'ve completed the Time-2 practice!'
-                  : 'You\'re making progress! Keep practicing to improve.',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16),
-        ),
-              const SizedBox(height: 24),
-              // Buttons
-              Wrap(
-                spacing: 16,
-                runSpacing: 16,
-                alignment: WrapAlignment.center,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Close dialog
-                      Navigator.of(context).pop(); // Return to previous screen (Time2ChapterScreen)
-                    },
-                    icon: const Icon(Icons.arrow_back),
-                    label: const Text('Back'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Close dialog
-                      setState(() {
-                        score = 0;
-                        currentQuestion = 0;
-                        showResult = false;
-                        selectedAnswer = null;
-                        _currentOptions = _getShuffledGameOptions();
-                      });
-                    },
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Play Again'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.secondary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-          ),
-        ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {

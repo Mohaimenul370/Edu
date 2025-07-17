@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:kg_education_app/utils/utils_func.dart';
 import '../services/shared_preference_service.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
@@ -97,7 +96,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
 
     setState(() {
       selectedAnswer = answer;
-      showResult = true;    
+      showResult = true;
       isCorrect = answer == shuffledQuestions[currentQuestion].answer;
       if (isCorrect) {
         score++;
@@ -132,17 +131,62 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
               score,
               shuffledQuestions.length,
             ).then((_) {
-              developer.log('Game progress saved for fractions_2: Score $score out of ${shuffledQuestions.length}');
+              developer.log(
+                  'Game progress saved for fractions_2: Score $score out of ${shuffledQuestions.length}');
               setState(() {
                 SharedPreferenceService.updateOverallProgress();
               });
-              // _showCompletionDialog();
-              showGameCompletionDialog(context, score, shuffledQuestions, setState, _startGame, 'Fractions 2');
+              _showGameCompletionDialog(score, shuffledQuestions.length);
             });
           }
         }
       }
     });
+  }
+
+  void _showGameCompletionDialog(int score, int totalQuestions) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Game Completed!',
+            style: TextStyle(
+              color: Color(0xFF7B2FF2),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+            'You scored $score out of $totalQuestions!',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  color: Color(0xFF7B2FF2),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _startGame();
+              },
+            ),
+          ],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          backgroundColor: Colors.white,
+          elevation: 4,
+        );
+      },
+    );
   }
 
   @override
