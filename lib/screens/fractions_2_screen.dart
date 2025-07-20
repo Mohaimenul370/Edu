@@ -137,62 +137,24 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
               setState(() {
                 SharedPreferenceService.updateOverallProgress();
               });
-                showGameCompletionDialog(context, score, shuffledQuestions, setState, _startGame, 'fractions_2');
-              });
+              showGameCompletionDialog(
+                context,
+                score,
+                shuffledQuestions,
+                setState,
+                _startGame,
+                'fractions_2',
+              );
+            });
           }
         }
       }
     });
   }
 
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text(
-            'Game Completed!',
-            style: TextStyle(
-              color: Color(0xFF7B2FF2),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Text(
-            'You scored $score out of $totalQuestions!',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text(
-                'OK',
-                style: TextStyle(
-                  color: Color(0xFF7B2FF2),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-                _startGame();
-              },
-            ),
-          ],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          backgroundColor: Colors.white,
-          elevation: 4,
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Color(0xFF7B2FF2),
       statusBarIconBrightness: Brightness.light,
       systemNavigationBarColor: Color(0xFF7B2FF2),
@@ -213,7 +175,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
             fontSize: 20,
           ),
         ),
-        backgroundColor: Color(0xFF7B2FF2),
+        backgroundColor: const Color(0xFF7B2FF2),
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -276,7 +238,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
             fontSize: 20,
           ),
         ),
-        backgroundColor: Color(0xFF7B2FF2),
+        backgroundColor: const Color(0xFF7B2FF2),
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -319,8 +281,8 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color(0xFF7B2FF2).withOpacity(0.1),
-                Color(0xFFF3EFFF).withOpacity(0.1),
+                const Color(0xFF7B2FF2).withOpacity(0.1),
+                const Color(0xFFF3EFFF).withOpacity(0.1),
               ],
             ),
             borderRadius: BorderRadius.circular(16),
@@ -335,7 +297,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                     'Question',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Color(0xFF7B2FF2).withOpacity(0.7),
+                      color: const Color(0xFF7B2FF2).withOpacity(0.7),
                     ),
                   ),
                   Text(
@@ -354,12 +316,12 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Color(0xFF7B2FF2).withOpacity(0.1),
+                    color: const Color(0xFF7B2FF2).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.star,
                         color: Color(0xFF7B2FF2),
                         size: 20,
@@ -367,7 +329,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                       const SizedBox(width: 4),
                       Text(
                         'Score: $score',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF7B2FF2),
@@ -400,8 +362,8 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                 style: ElevatedButton.styleFrom(
                   backgroundColor: option == selectedAnswer
                       ? (isCorrect ? Colors.green : Colors.red)
-                      : Color(0xFF7B2FF2).withOpacity(0.1),
-                  foregroundColor: Color(0xFF7B2FF2),
+                      : const Color(0xFF7B2FF2).withOpacity(0.1),
+                  foregroundColor: const Color(0xFF7B2FF2),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -457,7 +419,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border:
-                              Border.all(color: Color(0xFF7B2FF2), width: 2),
+                              Border.all(color: const Color(0xFF7B2FF2), width: 2),
                         ),
                       ),
                       Align(
@@ -465,14 +427,14 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                         child: Container(
                           width: 2,
                           height: 100,
-                          color: Color(0xFF7B2FF2),
+                          color: const Color(0xFF7B2FF2),
                         ),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 10),
-                Text(
+                const SizedBox(height: 10),
+                const Text(
                   '½',
                   style: TextStyle(
                     fontSize: 32,
@@ -570,7 +532,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                         height: 50,
                         decoration: BoxDecoration(
                           color: Colors.blue[400],
-                          borderRadius: BorderRadius.only(
+                          borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(6),
                             topRight: Radius.circular(6),
                           ),
@@ -579,9 +541,9 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                     ],
                   ),
                 ),
-                SizedBox(width: 20),
-                Icon(Icons.arrow_forward, color: Color(0xFF7B2FF2), size: 24),
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
+                const Icon(Icons.arrow_forward, color: Color(0xFF7B2FF2), size: 24),
+                const SizedBox(width: 20),
                 Row(
                   children: [
                     Container(
@@ -598,7 +560,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                             height: 40,
                             decoration: BoxDecoration(
                               color: Colors.blue[400],
-                              borderRadius: BorderRadius.only(
+                              borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(6),
                                 topRight: Radius.circular(6),
                               ),
@@ -607,7 +569,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                         ],
                       ),
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Container(
                       width: 40,
                       height: 80,
@@ -622,7 +584,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                             height: 40,
                             decoration: BoxDecoration(
                               color: Colors.blue[400],
-                              borderRadius: BorderRadius.only(
+                              borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(6),
                                 topRight: Radius.circular(6),
                               ),
@@ -648,14 +610,14 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 shape: BoxShape.circle,
-                border: Border.all(color: Color(0xFF7B2FF2), width: 2),
+                border: Border.all(color: const Color(0xFF7B2FF2), width: 2),
               ),
               child: CustomPaint(
                 painter: ClockPainter(
                   hourAngle: 2 * 30 * 3.14159 / 180 - 3.14159 / 2, // 2 o'clock
                   minuteAngle:
                       6 * 30 * 3.14159 / 180 - 3.14159 / 2, // 30 minutes
-                  color: Color(0xFF7B2FF2),
+                  color: const Color(0xFF7B2FF2),
                 ),
               ),
             ),
@@ -675,25 +637,25 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                     ...List.generate(
                         5,
                         (index) => Padding(
-                              padding: EdgeInsets.all(4),
+                              padding: const EdgeInsets.all(4),
                               child: Container(
                                 width: 20,
                                 height: 20,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   color: Color(0xFF7B2FF2),
                                   shape: BoxShape.circle,
                                 ),
                               ),
                             )),
-                    SizedBox(width: 20),
+                    const SizedBox(width: 20),
                     ...List.generate(
                         5,
                         (index) => Padding(
-                              padding: EdgeInsets.all(4),
+                              padding: const EdgeInsets.all(4),
                               child: Container(
                                 width: 20,
                                 height: 20,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   color: Color(0xFF7B2FF2),
                                   shape: BoxShape.circle,
                                 ),
@@ -701,8 +663,8 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                             )),
                   ],
                 ),
-                SizedBox(height: 10),
-                Text(
+                const SizedBox(height: 10),
+                const Text(
                   '5 + 5 = 10',
                   style: TextStyle(
                     fontSize: 24,
@@ -727,7 +689,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                 Container(
                   width: 120,
                   height: 120,
-                  margin: EdgeInsets.all(8),
+                  margin: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.orange[100],
                     shape: BoxShape.circle,
@@ -750,7 +712,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                           height: 120,
                           decoration: BoxDecoration(
                             color: Colors.orange[300],
-                            borderRadius: BorderRadius.only(
+                            borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(60),
                               bottomLeft: Radius.circular(60),
                             ),
@@ -790,7 +752,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Colors.blue[400],
-                                borderRadius: BorderRadius.only(
+                                borderRadius: const BorderRadius.only(
                                   topLeft: Radius.circular(6),
                                   topRight: Radius.circular(6),
                                 ),
@@ -801,9 +763,9 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                       ),
                     ),
                   ),
-                  SizedBox(width: 20),
-                  Icon(Icons.arrow_forward, color: Color(0xFF7B2FF2), size: 24),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
+                  const Icon(Icons.arrow_forward, color: Color(0xFF7B2FF2), size: 24),
+                  const SizedBox(width: 20),
                   Row(
                     children: [
                       Container(
@@ -822,7 +784,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: Colors.blue[400],
-                                    borderRadius: BorderRadius.only(
+                                    borderRadius: const BorderRadius.only(
                                       topLeft: Radius.circular(6),
                                       topRight: Radius.circular(6),
                                     ),
@@ -837,7 +799,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                           ),
                         ),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Container(
                         width: 40,
                         height: 80,
@@ -854,7 +816,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: Colors.blue[400],
-                                    borderRadius: BorderRadius.only(
+                                    borderRadius: const BorderRadius.only(
                                       topLeft: Radius.circular(6),
                                       topRight: Radius.circular(6),
                                     ),
@@ -887,14 +849,14 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 shape: BoxShape.circle,
-                border: Border.all(color: Color(0xFF7B2FF2), width: 2),
+                border: Border.all(color: const Color(0xFF7B2FF2), width: 2),
               ),
               child: CustomPaint(
                 painter: ClockPainter(
                   hourAngle: 2 * 30 * 3.14159 / 180 - 3.14159 / 2, // 2 o'clock
                   minuteAngle:
                       6 * 30 * 3.14159 / 180 - 3.14159 / 2, // 30 minutes
-                  color: Color(0xFF7B2FF2),
+                  color: const Color(0xFF7B2FF2),
                   isLarge: true,
                 ),
               ),
@@ -952,14 +914,14 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                   alignment: WrapAlignment.center,
                   children: List.generate(
                       18,
-                      (index) => Icon(
+                      (index) => const Icon(
                             Icons.apple,
                             color: Color(0xFF7B2FF2),
                             size: 24,
                           )),
                 ),
-                SizedBox(height: 16),
-                Text(
+                const SizedBox(height: 16),
+                const Text(
                   '÷ 2 = ?',
                   style: TextStyle(
                     fontSize: 24,
