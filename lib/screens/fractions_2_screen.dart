@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:kg_education_app/utils/utils_func.dart';
 import '../services/shared_preference_service.dart';
 import 'package:flutter/services.dart';
 import 'dart:math';
@@ -91,7 +92,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
     });
   }
 
-  void _checkAnswer(String answer) {
+  void _checkAnswer(String answer) async {
     if (showResult) return; // Prevent multiple answers while showing result
 
     setState(() {
@@ -108,9 +109,9 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
     });
 
     if (isCorrect) {
-      _speakText('Correct!');
+      await speakText('Correct!');
     } else {
-      _speakText('Try again!');
+      await speakText('Try again!');
     }
 
     // Shorter delay for better responsiveness
@@ -136,15 +137,15 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
               setState(() {
                 SharedPreferenceService.updateOverallProgress();
               });
-              _showGameCompletionDialog(score, shuffledQuestions.length);
-            });
+                showGameCompletionDialog(context, score, shuffledQuestions, setState, _startGame, 'fractions_2');
+              });
           }
         }
       }
     });
   }
 
-  void _showGameCompletionDialog(int score, int totalQuestions) {
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
