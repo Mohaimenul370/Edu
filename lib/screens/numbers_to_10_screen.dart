@@ -539,9 +539,7 @@ class _NumbersTo10ScreenState extends State<NumbersTo10Screen> with TickerProvid
     await flutterTts.setSpeechRate(0.5);
   }
 
-  Future<void> _speakText(String text) async {
-    await flutterTts.speak(text);
-  }
+
 
   void _generateQuestions() {
     final random = Random();
@@ -635,7 +633,7 @@ class _NumbersTo10ScreenState extends State<NumbersTo10Screen> with TickerProvid
     questions.shuffle(); // Shuffle all questions
   }
 
-  void _checkAnswer(int selectedIndex) {
+  Future<void> _checkAnswer(int selectedIndex) async {
     if (showResult) return;
 
     setState(() {
@@ -643,9 +641,7 @@ class _NumbersTo10ScreenState extends State<NumbersTo10Screen> with TickerProvid
       showResult = true;
       isCorrect = questions[currentQuestion].options[selectedIndex] == questions[currentQuestion].correctAnswer;
       
-      if (isCorrect) {
-        score++;
-      }
+      
     });
 
     // Animate the selected button
@@ -655,10 +651,11 @@ class _NumbersTo10ScreenState extends State<NumbersTo10Screen> with TickerProvid
 
     // Play sound based on correct/incorrect answer
     if (isCorrect) {
-      _playCorrectSound();
-    } else {
-      _playIncorrectSound();
-    }
+        score++;
+        await speakText('Correct! Well done!');
+      } else {
+        await speakText('Try again! The correct answer is ${questions[currentQuestion].correctAnswer}');
+      }
 
     // Delay before moving to next question
     Future.delayed(const Duration(seconds: 1), () async {
