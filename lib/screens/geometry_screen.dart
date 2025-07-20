@@ -274,9 +274,9 @@ class _GeometryScreenState extends State<GeometryScreen>
       isCorrect = answer == shuffledConcepts[currentQuestion].name;
       if (isCorrect) {
         score++;
-        _speakText("Correct!");
+        await speakText('Correct! Well done!');
       } else {
-        _speakText("Try again!");
+        await speakText('Try again! The correct answer is ${questions[currentQuestion].correctAnswer}');
       }
     });
 

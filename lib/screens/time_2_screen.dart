@@ -521,7 +521,7 @@ class _Time2ScreenState extends State<Time2Screen> with TickerProviderStateMixin
     );
   }
 
-  void _checkAnswer(String answer) {
+  void _checkAnswer(String answer) async {
     setState(() {
       selectedAnswer = answer;
       showResult = true;
@@ -531,9 +531,9 @@ class _Time2ScreenState extends State<Time2Screen> with TickerProviderStateMixin
       });
       if (isCorrect) {
         score++;
-        _speakText('Yay! You got it right! ${gameQuestions[currentQuestion]['correctAnswer']} is correct!');
+        await speakText('Yay! You got it right! ${gameQuestions[currentQuestion]['correctAnswer']} is correct!');
       } else {
-        _speakText('Oops! Try again! Think about what we do ${gameQuestions[currentQuestion]['question'].toLowerCase()}');
+        await speakText('Oops! Try again! Think about what we do ${gameQuestions[currentQuestion]['question'].toLowerCase()}');
       }
       if (currentQuestion == gameQuestions.length - 1) {
         SharedPreferenceService.saveGameProgress('time_2', score, gameQuestions.length);

@@ -177,7 +177,7 @@ class _FractionsScreenState extends State<FractionsScreen> with TickerProviderSt
     });
   }
 
-  void _checkAnswer(String answer) {
+  void _checkAnswer(String answer)async {
     if (showResult) return;
     setState(() {
       selectedAnswer = answer;
@@ -194,9 +194,9 @@ class _FractionsScreenState extends State<FractionsScreen> with TickerProviderSt
 
     if (isCorrect) {
       
-      _speakText('Correct!');
+      await speakText('Correct!');
     } else {
-      _speakText('Try again!');
+      await speakText('Try again!');
     }
 
     Future.delayed(const Duration(seconds: 1), () async {

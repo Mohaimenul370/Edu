@@ -201,7 +201,7 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
     });
   }
 
-  void _checkAnswer(String answer) {
+  void _checkAnswer(String answer) async {
     setState(() {
       _selectedAnswer = answer;
       _showResult = true;
@@ -209,11 +209,11 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
       _answerAnimationController.forward().then((_) {
         _answerAnimationController.reverse();
       });
-      if (_isCorrect) {
-        _score++;
-        _speakText('Correct! Well done!');
+      if (isCorrect) {
+        score++;
+        await speakText('Correct! Well done!');
       } else {
-        _speakText('Try again! The correct answer is ${_shuffledQuestions[_currentQuestionIndex].correctAnswer}');
+        await speakText('Try again! The correct answer is ${shuffledQuestions[currentQuestion].correctAnswer}');
       }
       if (_currentQuestionIndex < _shuffledQuestions.length - 1) {
         Future.delayed(const Duration(milliseconds: 1500), () {

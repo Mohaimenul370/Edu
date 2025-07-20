@@ -558,16 +558,16 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
     );
   }
 
-  void _checkAnswer(String answer) {
+  Future<void> _checkAnswer(String answer) async {  
     setState(() {
       selectedAnswer = answer;
       showResult = true;
       isCorrect = answer == shuffledGames[currentQuestion]['correctAnswer'];
       if (isCorrect) {
         score++;
-        _speakText('Correct!');
+        await speakText('Correct!');
       } else {
-        _speakText('Try again!');
+        await speakText('Try again!');
       }
     });
 

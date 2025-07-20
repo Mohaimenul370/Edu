@@ -361,7 +361,7 @@ class _StatisticsScreenState extends State<StatisticsScreen>
     }
   }
 
-  void _checkAnswer(String answer) {
+  void _checkAnswer(String answer) async {
     if (showResult) return;
 
     setState(() {
@@ -378,9 +378,9 @@ class _StatisticsScreenState extends State<StatisticsScreen>
     });
 
     if (isCorrect) {
-      _speakText('Correct! ${gameQuestions[currentQuestion].name} is right!');
+      await speakText('Correct! ${gameQuestions[currentQuestion].name} is right!');
     } else {
-      _speakText('Try again!');
+      await speakText('Try again!');
     }
 
     // Reduced delay from 800ms to 500ms
