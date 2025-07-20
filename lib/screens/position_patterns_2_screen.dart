@@ -51,7 +51,7 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen>
   late AnimationController _answerAnimationController;
   late Animation<double> _answerScaleAnimation;
   bool _isLoading = true;
-
+  
   // Maps to track game progress across different games
   Map<String, double> _gameScores = {};
   Map<String, bool> _gameCompleted = {};
@@ -208,7 +208,7 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen>
       await SharedPreferenceService.initialize();
       await _loadGameState();
       await _loadScores();
-
+      
       // Debug: Print all values to verify initialization
       developer.log(
           '=== Debug: All SharedPreference values after initialization ===');
@@ -224,7 +224,7 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen>
   Future<void> _loadScores() async {
     try {
       developer.log('Loading game scores from SharedPreferenceService...');
-
+      
       // Load numbers_to_10 progress
       final numbersScore =
           SharedPreferenceService.getGameScore('numbers_to_10');
@@ -240,7 +240,7 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen>
           SharedPreferenceService.isGameCompleted('position_patterns_2');
       final patternsPercentage =
           SharedPreferenceService.getGamePercentage('position_patterns_2');
-
+      
       // Log the loaded scores
       developer.log('Loaded scores:');
       developer.log(
@@ -252,10 +252,10 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen>
         // Update the game scores map
         _gameScores['numbers_to_10'] = numbersScore.toDouble();
         _gameCompleted['numbers_to_10'] = numbersIsCompleted;
-
+        
         _gameScores['position_patterns_2'] = patternsScore.toDouble();
         _gameCompleted['position_patterns_2'] = patternsIsCompleted;
-
+        
         // You might want to store these percentages as well
         // _gamePercentages['numbers_to_10'] = numbersPercentage;
         // _gamePercentages['position_patterns_2'] = patternsPercentage;
@@ -296,7 +296,7 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen>
       selectedAnswer = null;
       showResult = false;
       shuffledConcepts = List.from(concepts)..shuffle();
-
+      
       // Prepare options based on concept type
       for (var concept in shuffledConcepts) {
         if (concept.name == 'Number Patterns') {
@@ -312,7 +312,7 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen>
         }
         concept.options.shuffle();
       }
-
+      
       _animationController.reset();
       _animationController.forward();
     });
@@ -341,23 +341,23 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen>
 
     if (isCorrect) {
       await speakText('Correct! Well done!');
-      _animationController.reset();
-      _animationController.forward();
-    } else {
+        _animationController.reset();
+        _animationController.forward();
+      } else {
       await speakText('Try again! The correct answer is $correctAnswer');
-    }
+      }
 
     // Shorter delay for better responsiveness
     Future.delayed(const Duration(seconds: 1), () {
       if (mounted) {
-        if (currentQuestion < shuffledConcepts.length - 1) {
+      if (currentQuestion < shuffledConcepts.length - 1) {
           setState(() {
             currentQuestion++;
             selectedAnswer = null;
             showResult = false;
             isCorrect = false;
-          });
-        } else {
+        });
+      } else {
           // Game completed, update progress and show dialog
           if (mounted) {
             SharedPreferenceService.saveGameProgress(
@@ -372,7 +372,7 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen>
               });
               showGameCompletionDialog(context, score, shuffledConcepts,
                   setState, _startGame, 'Position_Patterns_2');
-            });
+        });
           }
         }
       }
@@ -586,7 +586,7 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen>
                   final showCorrectAnswer = showResult && isCorrectOption;
                   final showIncorrectSelection =
                       showResult && isSelected && !isCorrectOption;
-
+                  
                   Color backgroundColor;
                   if (showCorrectAnswer) {
                     backgroundColor = Colors.green.withOpacity(0.9);
@@ -670,4 +670,4 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen>
     flutterTts.stop();
     super.dispose();
   }
-}
+} 

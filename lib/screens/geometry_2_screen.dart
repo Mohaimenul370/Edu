@@ -273,17 +273,10 @@ class _Geometry2ScreenState extends State<Geometry2Screen>
   @override
   void initState() {
     super.initState();
-    _initializeTts();
     _initializeAnimations();
     if (widget.isGameMode) {
       _startGame();
     }
-  }
-
-  Future<void> _initializeTts() async {
-    await flutterTts.setLanguage("en-US");
-    await flutterTts.setPitch(1.0);
-    await flutterTts.setSpeechRate(0.5);
   }
 
   void _initializeAnimations() {
@@ -364,11 +357,11 @@ class _Geometry2ScreenState extends State<Geometry2Screen>
       _nextQuestion();
     } else {
       SharedPreferenceService.saveGameProgress(
-          'geometry_2',
-          _score,
-          _shuffledQuestions.length,
-        );
-        SharedPreferenceService.updateOverallProgress();
+        'geometry_2',
+        _score,
+        _shuffledQuestions.length,
+      );
+      SharedPreferenceService.updateOverallProgress();
       showGameCompletionDialog(context, _score, _shuffledQuestions, setState,
           _startGame, 'Geometry_2');
     }

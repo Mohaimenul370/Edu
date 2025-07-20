@@ -378,9 +378,9 @@ class _StatisticsScreenState extends State<StatisticsScreen>
     });
 
     if (isCorrect) {
-      await speakText('Correct! ${gameQuestions[currentQuestion].name} is right!');
+      await speakText('Correct! Well done!');
     } else {
-      await speakText('Try again!');
+      await speakText('Try again! The correct answer is ${gameQuestions[currentQuestion].name}');
     }
 
     // Reduced delay from 800ms to 500ms

@@ -46,6 +46,8 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
   bool isCorrect = false;
   late AnimationController _scaleAnimationController;
   late Animation<double> _scaleAnimation;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
   late List<Fractions2GameQuestion> shuffledQuestions;
 
   @override
@@ -53,16 +55,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
     super.initState();
     isGameMode = widget.isGameMode;
     _initializeTts();
-    _scaleAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
-      CurvedAnimation(
-        parent: _scaleAnimationController,
-        curve: Curves.easeInOut,
-      ),
-    );
+    _initializeAnimations();
     if (isGameMode) {
       _startGame();
     }
@@ -76,6 +69,30 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
 
   Future<void> _speakText(String text) async {
     await flutterTts.speak(text);
+  }
+
+  void _initializeAnimations() {
+    _scaleAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
+      CurvedAnimation(
+        parent: _scaleAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
   }
 
   void _startGame() {
@@ -95,10 +112,13 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
   void _checkAnswer(String answer) async {
     if (showResult) return; // Prevent multiple answers while showing result
 
+    final correctAnswer = shuffledQuestions[currentQuestion].answer;
+    final isAnswerCorrect = answer == correctAnswer;
+
     setState(() {
       selectedAnswer = answer;
       showResult = true;
-      isCorrect = answer == shuffledQuestions[currentQuestion].answer;
+      isCorrect = isAnswerCorrect;
       if (isCorrect) {
         score++;
       }
@@ -109,9 +129,9 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
     });
 
     if (isCorrect) {
-      await speakText('Correct!');
+      await speakText('Correct! Well done!');
     } else {
-      await speakText('Try again!');
+      await speakText('Try again! The correct answer is $correctAnswer');
     }
 
     // Shorter delay for better responsiveness
@@ -357,41 +377,89 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
         const SizedBox(height: 24),
         ...q.options.map((option) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 6),
-              child: ElevatedButton(
-                onPressed: showResult ? null : () => _checkAnswer(option),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: option == selectedAnswer
-                      ? (isCorrect ? Colors.green : Colors.red)
-                      : const Color(0xFF7B2FF2).withOpacity(0.1),
-                  foregroundColor: const Color(0xFF7B2FF2),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-                child: Text(
-                  option,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              child: AnimatedBuilder(
+                animation: _scaleAnimationController,
+                builder: (context, child) {
+                  final isSelected = option == selectedAnswer;
+                  final isCorrectOption = option == q.answer;
+                  final showCorrectAnswer = showResult && isCorrectOption;
+                  final showIncorrectSelection =
+                      showResult && isSelected && !isCorrectOption;
+
+                  return Transform.scale(
+                    scale: isSelected ? _scaleAnimation.value : 1.0,
+                    child: ElevatedButton(
+                      onPressed: showResult ? null : () => _checkAnswer(option),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: showCorrectAnswer
+                            ? Colors.green.withOpacity(0.2)
+                            : showIncorrectSelection
+                                ? Colors.red.withOpacity(0.2)
+                                : const Color(0xFF7B2FF2).withOpacity(0.1),
+                        foregroundColor: showCorrectAnswer
+                            ? Colors.green[700]
+                            : showIncorrectSelection
+                                ? Colors.red[700]
+                                : const Color(0xFF7B2FF2),
+                        elevation: (showCorrectAnswer || showIncorrectSelection)
+                            ? 4
+                            : 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(
+                            color: showCorrectAnswer
+                                ? Colors.green
+                                : showIncorrectSelection
+                                    ? Colors.red
+                                    : Colors.transparent,
+                            width: (showCorrectAnswer || showIncorrectSelection)
+                                ? 2
+                                : 0,
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        
+                        children: [
+                          Center(
+                            child: Text(
+                              option,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: (showCorrectAnswer ||
+                                        showIncorrectSelection)
+                                    ? FontWeight.bold
+                                    : FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          if (showCorrectAnswer)
+                            const Icon(Icons.check_circle,
+                                color: Colors.green, size: 24)
+                          else if (showIncorrectSelection)
+                            const Icon(Icons.cancel,
+                                color: Colors.red, size: 24),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
             )),
-        const SizedBox(height: 24),
-        if (showResult)
-          Text(
-            isCorrect ? 'Correct!' : 'Try again!',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: isCorrect ? Colors.green : Colors.red,
-            ),
-          ),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    _scaleAnimationController.dispose();
+    _animationController.dispose();
+    flutterTts.stop();
+    super.dispose();
   }
 
   // --- LESSON CONTENT ---
@@ -418,8 +486,8 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                         height: 100,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border:
-                              Border.all(color: const Color(0xFF7B2FF2), width: 2),
+                          border: Border.all(
+                              color: const Color(0xFF7B2FF2), width: 2),
                         ),
                       ),
                       Align(
@@ -542,7 +610,8 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                   ),
                 ),
                 const SizedBox(width: 20),
-                const Icon(Icons.arrow_forward, color: Color(0xFF7B2FF2), size: 24),
+                const Icon(Icons.arrow_forward,
+                    color: Color(0xFF7B2FF2), size: 24),
                 const SizedBox(width: 20),
                 Row(
                   children: [
@@ -764,7 +833,8 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                     ),
                   ),
                   const SizedBox(width: 20),
-                  const Icon(Icons.arrow_forward, color: Color(0xFF7B2FF2), size: 24),
+                  const Icon(Icons.arrow_forward,
+                      color: Color(0xFF7B2FF2), size: 24),
                   const SizedBox(width: 20),
                   Row(
                     children: [

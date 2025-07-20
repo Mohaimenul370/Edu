@@ -194,9 +194,9 @@ class _FractionsScreenState extends State<FractionsScreen> with TickerProviderSt
 
     if (isCorrect) {
       
-      await speakText('Correct!');
+      await speakText('Correct! Well done!');
     } else {
-      await speakText('Try again!');
+      await speakText('Try again! The correct answer is ${shuffledActivities[currentQuestion].name}');
     }
 
     Future.delayed(const Duration(seconds: 1), () async {

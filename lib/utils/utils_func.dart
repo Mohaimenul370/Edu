@@ -139,10 +139,12 @@ void showGameCompletionDialog(
 Future<void> speakText(String text) async {
   final tts = FlutterTts();
   await tts.setVoice({
-    "name": "en-GB-language",
-    "locale": "en-GB"
+    // Try to select a smooth, natural-sounding English voice if available
+    // For Google TTS, "en-US-Wavenet-F" is often considered smooth and natural
+    "name": "en-US-Wavenet-F",
+    "locale": "en-US",
   }); // Google UK English Female
-  await tts.setSpeechRate(.8); // Set a faster speech rate
+  await tts.setSpeechRate(.6); // Set a faster speech rate
   await tts.awaitSpeakCompletion(true);
   await tts.speak(text);
 }

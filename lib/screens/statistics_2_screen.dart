@@ -619,7 +619,8 @@ Green ■■
                     final isCorrect = option ==
                         gameQuestions[currentQuestionIndex]['correctAnswer'];
                     final showCorrectAnswer = showResult && isCorrect;
-                    final showIncorrectSelection = showResult && isSelected && !isCorrect;
+                    final showIncorrectSelection =
+                        showResult && isSelected && !isCorrect;
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 16),
@@ -629,7 +630,9 @@ Green ■■
                           return Transform.scale(
                             scale: isSelected ? _scaleAnimation.value : 1.0,
                             child: ElevatedButton(
-                              onPressed: showResult ? null : () => _checkAnswer(option),
+                              onPressed: showResult
+                                  ? null
+                                  : () => _checkAnswer(option),
                               style: ElevatedButton.styleFrom(
                                 padding: const EdgeInsets.all(16),
                                 backgroundColor: showCorrectAnswer
@@ -650,20 +653,28 @@ Green ■■
                                         : showIncorrectSelection
                                             ? Colors.red
                                             : Colors.purple,
-                                    width: (showCorrectAnswer || showIncorrectSelection) ? 2 : 1,
+                                    width: (showCorrectAnswer ||
+                                            showIncorrectSelection)
+                                        ? 2
+                                        : 1,
                                   ),
                                 ),
-                                elevation: (showCorrectAnswer || showIncorrectSelection) ? 4 : 1,
+                                elevation: (showCorrectAnswer ||
+                                        showIncorrectSelection)
+                                    ? 4
+                                    : 1,
                               ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Expanded(
                                     child: Text(
                                       option,
                                       style: TextStyle(
                                         fontSize: 16,
-                                        fontWeight: (showCorrectAnswer || showIncorrectSelection)
+                                        fontWeight: (showCorrectAnswer ||
+                                                showIncorrectSelection)
                                             ? FontWeight.bold
                                             : FontWeight.normal,
                                       ),

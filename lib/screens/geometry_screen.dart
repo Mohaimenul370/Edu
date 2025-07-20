@@ -5,7 +5,6 @@ import 'dart:math' as math;
 import '../services/shared_preference_service.dart';
 import 'package:flutter/services.dart';
 import '../utils/utils_func.dart';
-import './geometry_chapter_screen.dart';
 
 class GeometryConcept {
   final String name;
@@ -192,9 +191,6 @@ class _GeometryScreenState extends State<GeometryScreen>
     await flutterTts.setSpeechRate(0.5);
   }
 
-  Future<void> _speakText(String text) async {
-    await flutterTts.speak(text);
-  }
 
   void _startGame() {
     setState(() {
@@ -278,9 +274,9 @@ class _GeometryScreenState extends State<GeometryScreen>
     });
 
     if (isCorrect) {
-      await speakText('Correct!');
+      await speakText('Correct! Well done!');
     } else {
-      await speakText('Try again!');
+      await speakText('Try again! The correct answer is ${shuffledConcepts[currentQuestion].name}');
     }
 
     // Trigger animation for the selected option

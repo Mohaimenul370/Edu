@@ -10,7 +10,8 @@ class PositionConcept {
   final String description;
   final IconData icon;
 
-  PositionConcept({required this.name, required this.description, required this.icon});
+  PositionConcept(
+      {required this.name, required this.description, required this.icon});
 }
 
 class PositionGameQuestion {
@@ -108,7 +109,8 @@ class PositionsScreen extends StatefulWidget {
   State<PositionsScreen> createState() => _PositionsScreenState();
 }
 
-class _PositionsScreenState extends State<PositionsScreen> with TickerProviderStateMixin {
+class _PositionsScreenState extends State<PositionsScreen>
+    with TickerProviderStateMixin {
   final FlutterTts flutterTts = FlutterTts();
   int _currentQuestionIndex = 0;
   int _score = 0;
@@ -181,10 +183,10 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
   List<String> _getShuffledOptions(PositionGameQuestion question) {
     // Create a list of options including the correct answer
     final List<String> options = List.from(question.options);
-    
+
     // Shuffle the options to randomize their order
     options.shuffle();
-    
+
     return options;
   }
 
@@ -205,23 +207,25 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
     setState(() {
       _selectedAnswer = answer;
       _showResult = true;
-      _isCorrect = answer == _shuffledQuestions[_currentQuestionIndex].correctAnswer;
+      _isCorrect =
+          answer == _shuffledQuestions[_currentQuestionIndex].correctAnswer;
       if (_isCorrect) {
         _score++;
       }
     });
 
-      _answerAnimationController.forward().then((_) {
-        _answerAnimationController.reverse();
-      });
+    _answerAnimationController.forward().then((_) {
+      _answerAnimationController.reverse();
+    });
 
-      if (_isCorrect) {
-        await speakText('Correct!');
-      } else {
-        await speakText('Try again!');
-      }
+    if (_isCorrect) {
+      await speakText('Correct! Well done!');
+    } else {
+      await speakText(
+          'Try again! The correct answer is ${_shuffledQuestions[_currentQuestionIndex].correctAnswer}');
+    }
 
-      Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 1), () {
       if (mounted) {
         if (_currentQuestionIndex < _shuffledQuestions.length - 1) {
           setState(() {
@@ -250,7 +254,7 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
                 setState,
                 _startGame,
                 'positions',
-              );  
+              );
             });
           }
         }
@@ -264,16 +268,17 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
         _currentQuestionIndex++;
         _selectedAnswer = null;
         _showResult = false;
-        _currentOptions = _getShuffledOptions(_shuffledQuestions[_currentQuestionIndex]);
+        _currentOptions =
+            _getShuffledOptions(_shuffledQuestions[_currentQuestionIndex]);
         _animationController.reset();
         _animationController.forward();
         _speakText('Next question!');
       } else {
-        showGameCompletionDialog(context, _score, _shuffledQuestions, setState, _startGame, 'Positions');
+        showGameCompletionDialog(context, _score, _shuffledQuestions, setState,
+            _startGame, 'Positions');
       }
     });
   }
-
 
   @override
   void dispose() {
@@ -316,7 +321,8 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
               borderRadius: BorderRadius.circular(16),
             ),
             child: InkWell(
-              onTap: () => _speakText('${concept.name}. ${concept.description}'),
+              onTap: () =>
+                  _speakText('${concept.name}. ${concept.description}'),
               borderRadius: BorderRadius.circular(16),
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -452,8 +458,10 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
                         aspectRatio: 1.5,
                         child: SingleChildScrollView(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: _shuffledQuestions[_currentQuestionIndex].visual,
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: _shuffledQuestions[_currentQuestionIndex]
+                                .visual,
                           ),
                         ),
                       ),
@@ -476,7 +484,9 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
             Column(
               children: _currentOptions.map((option) {
                 final isSelected = _selectedAnswer == option;
-                final isCorrectOption = _showResult && option == _shuffledQuestions[_currentQuestionIndex].correctAnswer;
+                final isCorrectOption = _showResult &&
+                    option ==
+                        _shuffledQuestions[_currentQuestionIndex].correctAnswer;
                 final isIncorrect = _showResult && isSelected && !_isCorrect;
                 Color backgroundColor;
                 if (isCorrectOption) {
@@ -510,7 +520,9 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
                             color: Colors.transparent,
                             child: InkWell(
                               borderRadius: BorderRadius.circular(12),
-                              onTap: _showResult ? null : () => _checkAnswer(option),
+                              onTap: _showResult
+                                  ? null
+                                  : () => _checkAnswer(option),
                               child: Padding(
                                 padding: const EdgeInsets.all(16.0),
                                 child: Text(
@@ -518,7 +530,9 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
-                                    color: isSelected || isCorrectOption || isIncorrect
+                                    color: isSelected ||
+                                            isCorrectOption ||
+                                            isIncorrect
                                         ? Colors.white
                                         : const Color(0xFF6A1B9A),
                                   ),
@@ -723,4 +737,4 @@ class PositionPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
-} 
+}
