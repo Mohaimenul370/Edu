@@ -95,7 +95,7 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    
+
     _animation = CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
@@ -126,21 +126,25 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
       TimeConcept(
         name: 'Days of the Week',
         visual: _buildDaysVisual(),
-        description: 'There are 7 days in a week: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, and Sunday.',
+        description:
+            'There are 7 days in a week: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, and Sunday.',
         options: ['7 days', '6 days', '5 days', '8 days'],
         exercise: 'Can you say the days of the week in order?',
       ),
       TimeConcept(
         name: 'Weekdays and Weekends',
         visual: _buildWeekdayWeekendVisual(),
-        description: 'Weekdays are Monday to Friday, and weekends are Saturday and Sunday.',
+        description:
+            'Weekdays are Monday to Friday, and weekends are Saturday and Sunday.',
         options: ['Weekdays', 'Weekends', 'Both', 'Neither'],
-        exercise: 'Can you identify which days are weekdays and which are weekend days?',
+        exercise:
+            'Can you identify which days are weekdays and which are weekend days?',
       ),
       TimeConcept(
         name: 'Yesterday, Today, and Tomorrow',
         visual: _buildCalendarVisual(),
-        description: 'Today is the current day, tomorrow is the next day, and yesterday was the day before.',
+        description:
+            'Today is the current day, tomorrow is the next day, and yesterday was the day before.',
         options: ['Today', 'Tomorrow', 'Yesterday', 'Next week'],
         exercise: 'If today is Monday, what day is tomorrow?',
       ),
@@ -149,29 +153,38 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
       TimeConcept(
         name: 'Morning Activities',
         visual: _buildTimeVisual('🌅', 'Morning'),
-        description: 'Morning is when we wake up and start our day, from sunrise until noon.',
+        description:
+            'Morning is when we wake up and start our day, from sunrise until noon.',
         options: ['Morning', 'Afternoon', 'Evening', 'Night'],
         exercise: 'What activities do you do in the morning?',
       ),
       TimeConcept(
         name: 'Afternoon Activities',
         visual: _buildTimeVisual('☀️', 'Afternoon'),
-        description: 'Afternoon is from noon until evening, when the sun is high in the sky.',
+        description:
+            'Afternoon is from noon until evening, when the sun is high in the sky.',
         options: ['Afternoon', 'Morning', 'Evening', 'Night'],
         exercise: 'What time do you eat lunch?',
       ),
       TimeConcept(
         name: 'Evening Activities',
         visual: _buildTimeVisual('🌆', 'Evening'),
-        description: 'Evening is when the sun sets and we prepare to end our day.',
+        description:
+            'Evening is when the sun sets and we prepare to end our day.',
         options: ['Evening', 'Morning', 'Afternoon', 'Night'],
         exercise: 'What do you do in the evening?',
       ),
       TimeConcept(
         name: 'Daily Routines',
         visual: _buildDailyRoutineVisual(),
-        description: 'Our day has a routine of activities from morning to night.',
-        options: ['Morning routine', 'Evening routine', 'Daily routine', 'Weekend routine'],
+        description:
+            'Our day has a routine of activities from morning to night.',
+        options: [
+          'Morning routine',
+          'Evening routine',
+          'Daily routine',
+          'Weekend routine'
+        ],
         exercise: 'Can you describe your daily routine?',
       ),
     ];
@@ -184,7 +197,8 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
         'image': _buildCalendarVisual(),
         'options': ['Tuesday', 'Thursday', 'Monday', 'Friday'],
         'correctAnswer': 'Tuesday',
-        'explanation': 'Yesterday is the day before today. If today is Wednesday, then yesterday was Tuesday.',
+        'explanation':
+            'Yesterday is the day before today. If today is Wednesday, then yesterday was Tuesday.',
       },
       {
         'question': 'Which activities belong to a morning routine?',
@@ -196,14 +210,17 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
           'Shopping, cooking, cleaning'
         ],
         'correctAnswer': 'Wake up, brush teeth, breakfast',
-        'explanation': 'Morning routines typically include activities we do when we start our day.',
+        'explanation':
+            'Morning routines typically include activities we do when we start our day.',
       },
       {
-        'question': 'Sarah has dance class every Monday and Thursday. How many days per week does she have dance class?',
+        'question':
+            'Sarah has dance class every Monday and Thursday. How many days per week does she have dance class?',
         'image': _buildDaysVisual(),
         'options': ['2 days', '3 days', '4 days', '5 days'],
         'correctAnswer': '2 days',
-        'explanation': 'If Sarah has dance class on Monday and Thursday, that means she goes twice (2 days) per week.',
+        'explanation':
+            'If Sarah has dance class on Monday and Thursday, that means she goes twice (2 days) per week.',
       },
       {
         'question': 'Which days make up a weekend?',
@@ -215,26 +232,24 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
           'Monday and Tuesday'
         ],
         'correctAnswer': 'Saturday and Sunday',
-        'explanation': 'Weekends are Saturday and Sunday, when most people don\'t go to school or work.',
+        'explanation':
+            'Weekends are Saturday and Sunday, when most people don\'t go to school or work.',
       },
       {
-        'question': 'Match the activity with the correct time of day: "Having breakfast"',
+        'question':
+            'Match the activity with the correct time of day: "Having breakfast"',
         'image': _buildTimeVisual('🌅', 'Morning'),
-        'options': [
-          'Morning',
-          'Evening',
-          'Afternoon',
-          'Night'
-        ],
+        'options': ['Morning', 'Evening', 'Afternoon', 'Night'],
         'correctAnswer': 'Morning',
-        'explanation': 'Breakfast is our first meal of the day, which we typically have in the morning after waking up.',
+        'explanation':
+            'Breakfast is our first meal of the day, which we typically have in the morning after waking up.',
       }
     ];
   }
 
   void _startGame() {
     if (!isGameMode) return;
-    
+
     setState(() {
       currentQuestion = 0;
       score = 0;
@@ -245,29 +260,34 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
 
   void _shuffleGameOptions() {
     setState(() {
-      _shuffledOptions = List<String>.from(gameQuestions[currentQuestion]['options'] as List<String>);
+      _shuffledOptions = List<String>.from(
+          gameQuestions[currentQuestion]['options'] as List<String>);
       _shuffledOptions.shuffle();
     });
   }
 
-  void _checkAnswer(String selectedOption) {
-    final isCorrect = selectedOption == gameQuestions[currentQuestion]['correctAnswer'];
-    
+  Future<void> _checkAnswer(String selectedOption) async {
+    final isCorrect =
+        selectedOption == gameQuestions[currentQuestion]['correctAnswer'];
+
     setState(() {
       selectedAnswer = selectedOption;
       _showingFeedback = true;
       _isCorrectAnswer = isCorrect;
-      
+
       if (isCorrect) {
         score++;
-        _answerAnimationController.forward().then((_) {
-          _answerAnimationController.reverse();
-        });
-        flutterTts.speak('Correct!');
-      } else {
-        flutterTts.speak('Try again!');
       }
+
+      _answerAnimationController.forward().then((_) {
+        _answerAnimationController.reverse();
+      });
     });
+    if (isCorrect) {
+      await speakText('Correct!');
+    } else {
+      await speakText('Try again!');
+    }
 
     // Add animation and feedback delay before moving to next question
     Future.delayed(const Duration(milliseconds: 1500), () {
@@ -275,7 +295,7 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
         setState(() {
           _showingFeedback = false;
         });
-        
+
         if (currentQuestion < gameQuestions.length - 1) {
           setState(() {
             currentQuestion++;
@@ -286,187 +306,18 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
           // Save progress immediately when game is complete
           developer.log('Time screen completed. Saving progress...');
           developer.log('Score: $score out of ${gameQuestions.length}');
-          
-          SharedPreferenceService.saveGameProgress('time', score, gameQuestions.length).then((_) {
+
+          SharedPreferenceService.saveGameProgress(
+                  'time', score, gameQuestions.length)
+              .then((_) {
             developer.log('Time screen progress saved successfully');
             // Show game complete dialog
-            showGameCompletionDialog(context, score, gameQuestions, setState, _startGame, 'Time');
+            showGameCompletionDialog(
+                context, score, gameQuestions, setState, _startGame, 'Time');
           });
         }
       }
     });
-  }
-
-  void _showGameCompleteDialog() {
-    final percentage = (score / gameQuestions.length) * 100;
-    
-    developer.log('Showing game completion dialog');
-    developer.log('Final percentage: $percentage%');
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => WillPopScope(
-        onWillPop: () async => false,
-        child: Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.emoji_events,
-                    size: 48,
-                    color: Colors.green,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Congratulations!',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  decoration: BoxDecoration(
-                    color: Color(0xFF7B2FF2).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    children: [
-                      const Text(
-                        'Your Score',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF7B2FF2),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '$score / ${gameQuestions.length}',
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF7B2FF2),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${percentage.toStringAsFixed(0)}%',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orange,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  percentage >= 80 
-                      ? 'Great job! You\'ve mastered time concepts!'
-                      : percentage >= 60
-                          ? 'Good work! Keep practicing!'
-                          : 'Nice try! Practice makes perfect!',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close dialog
-                          Navigator.of(context).pushReplacementNamed('/time'); // Navigate to time_chapter_screen.dart
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF7B2FF2),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.arrow_back, size: 18),
-                            SizedBox(width: 8),
-                            Text('Back'),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close dialog
-                          setState(() {
-                            score = 0;
-                            currentQuestion = 0;
-                            selectedAnswer = null;
-                            _showingFeedback = false;
-                            _shuffleGameOptions();
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.refresh, size: 18),
-                            SizedBox(width: 8),
-                            Text('Play Again'),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   @override
@@ -609,7 +460,8 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            gameQuestions[currentQuestion]['question'] as String,
+                            gameQuestions[currentQuestion]['question']
+                                as String,
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -621,7 +473,8 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
                           SizedBox(
                             height: 200, // Increased height to prevent overflow
                             child: Center(
-                              child: gameQuestions[currentQuestion]['image'] as Widget,
+                              child: gameQuestions[currentQuestion]['image']
+                                  as Widget,
                             ),
                           ),
                         ],
@@ -647,21 +500,24 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
 
   Widget _buildAnswerOption(String option) {
     final isSelected = selectedAnswer == option;
-    final isCorrectOption = option == gameQuestions[currentQuestion]['correctAnswer'];
+    final isCorrectOption =
+        option == gameQuestions[currentQuestion]['correctAnswer'];
     final isIncorrect = isSelected && !isCorrectOption;
-    
+
     return AnimatedBuilder(
       animation: _answerAnimationController,
       builder: (context, child) {
         return Transform.scale(
-          scale: isSelected && isCorrectOption ? _answerScaleAnimation.value : 1.0,
+          scale:
+              isSelected && isCorrectOption ? _answerScaleAnimation.value : 1.0,
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
               color: _getOptionColor(isSelected, isCorrectOption, isIncorrect),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: _getBorderColor(isSelected, isCorrectOption, isIncorrect),
+                color:
+                    _getBorderColor(isSelected, isCorrectOption, isIncorrect),
                 width: 2,
               ),
               boxShadow: [
@@ -676,10 +532,12 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: selectedAnswer == null ? () => _checkAnswer(option) : null,
+                onTap:
+                    selectedAnswer == null ? () => _checkAnswer(option) : null,
                 borderRadius: BorderRadius.circular(12),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -687,8 +545,11 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
                         child: Text(
                           option,
                           style: TextStyle(
-                            color: _getTextColor(isSelected, isCorrectOption, isIncorrect),
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            color: _getTextColor(
+                                isSelected, isCorrectOption, isIncorrect),
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                         ),
                       ),
@@ -708,15 +569,18 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Color _getOptionColor(bool isSelected, bool isCorrectOption, bool isIncorrect) {
+  Color _getOptionColor(
+      bool isSelected, bool isCorrectOption, bool isIncorrect) {
     if (!_showingFeedback) return Colors.white;
     if (isSelected && isCorrectOption) return Colors.green.withOpacity(0.2);
     if (isIncorrect) return Colors.red.withOpacity(0.2);
     return Colors.white;
   }
 
-  Color _getBorderColor(bool isSelected, bool isCorrectOption, bool isIncorrect) {
-    if (!_showingFeedback) return isSelected ? Colors.purple : Colors.grey.shade300;
+  Color _getBorderColor(
+      bool isSelected, bool isCorrectOption, bool isIncorrect) {
+    if (!_showingFeedback)
+      return isSelected ? Colors.purple : Colors.grey.shade300;
     if (isSelected && isCorrectOption) return Colors.green;
     if (isIncorrect) return Colors.red;
     return Colors.grey.shade300;
@@ -731,7 +595,9 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
 
   Color _getShadowColor(bool isCorrectOption) {
     if (!_showingFeedback) return Colors.purple.withOpacity(0.3);
-    return isCorrectOption ? Colors.green.withOpacity(0.3) : Colors.red.withOpacity(0.3);
+    return isCorrectOption
+        ? Colors.green.withOpacity(0.3)
+        : Colors.red.withOpacity(0.3);
   }
 
   static Widget _buildDaysVisual() {
@@ -744,7 +610,8 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Days of the Week', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          const Text('Days of the Week',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 150),
@@ -753,17 +620,19 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
                 spacing: 12,
                 runSpacing: 12,
                 alignment: WrapAlignment.center,
-                children: [
-                  'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'
-                ].map((day) => Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.purple),
-                  ),
-                  child: Text(day, style: const TextStyle(fontSize: 16)),
-                )).toList(),
+                children: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                    .map((day) => Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.purple),
+                          ),
+                          child:
+                              Text(day, style: const TextStyle(fontSize: 16)),
+                        ))
+                    .toList(),
               ),
             ),
           ),
@@ -897,7 +766,7 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          _buildSimpleClock(hour, 0),  // 0 minutes for o'clock
+          _buildSimpleClock(hour, 0), // 0 minutes for o'clock
         ],
       ),
     );
@@ -913,7 +782,7 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          _buildSimpleClock(hour, 30),  // 30 minutes for half past
+          _buildSimpleClock(hour, 30), // 30 minutes for half past
         ],
       ),
     );
@@ -946,12 +815,12 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
                   children: const [
                     Icon(Icons.calendar_today, color: Colors.purple, size: 48),
                     SizedBox(height: 8),
-                    Text('Today', 
+                    Text(
+                      'Today',
                       style: TextStyle(
-                        color: Colors.purple, 
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16
-                      ),
+                          color: Colors.purple,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
                     ),
                   ],
                 ),
@@ -982,7 +851,9 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(label, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          Text(label,
+              style:
+                  const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           Text(emoji, style: const TextStyle(fontSize: 48)),
           const SizedBox(height: 16),
@@ -1007,7 +878,8 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text('Weekdays vs Weekends', 
+          const Text(
+            'Weekdays vs Weekends',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
@@ -1025,7 +897,8 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
                   ),
                   child: const Column(
                     children: [
-                      Text('Weekdays',
+                      Text(
+                        'Weekdays',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -1033,7 +906,8 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
                         ),
                       ),
                       SizedBox(height: 8),
-                      Text('Mon - Fri',
+                      Text(
+                        'Mon - Fri',
                         style: TextStyle(fontSize: 16),
                       ),
                     ],
@@ -1050,7 +924,8 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
                   ),
                   child: const Column(
                     children: [
-                      Text('Weekends',
+                      Text(
+                        'Weekends',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -1058,7 +933,8 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
                         ),
                       ),
                       SizedBox(height: 8),
-                      Text('Sat - Sun',
+                      Text(
+                        'Sat - Sun',
                         style: TextStyle(fontSize: 16),
                       ),
                     ],
@@ -1099,9 +975,11 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Flexible(child: _buildRoutineItem('🌅', 'Wake')),
-                      const Icon(Icons.arrow_forward, color: Colors.purple, size: 16),
+                      const Icon(Icons.arrow_forward,
+                          color: Colors.purple, size: 16),
                       Flexible(child: _buildRoutineItem('🍳', 'Eat')),
-                      const Icon(Icons.arrow_forward, color: Colors.purple, size: 16),
+                      const Icon(Icons.arrow_forward,
+                          color: Colors.purple, size: 16),
                       Flexible(child: _buildRoutineItem('🏫', 'School')),
                     ],
                   ),
@@ -1110,9 +988,11 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Flexible(child: _buildRoutineItem('🌆', 'Dinner')),
-                      const Icon(Icons.arrow_forward, color: Colors.purple, size: 16),
+                      const Icon(Icons.arrow_forward,
+                          color: Colors.purple, size: 16),
                       Flexible(child: _buildRoutineItem('🛁', 'Bath')),
-                      const Icon(Icons.arrow_forward, color: Colors.purple, size: 16),
+                      const Icon(Icons.arrow_forward,
+                          color: Colors.purple, size: 16),
                       Flexible(child: _buildRoutineItem('😴', 'Sleep')),
                     ],
                   ),
@@ -1138,7 +1018,8 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
         children: [
           Text(emoji, style: const TextStyle(fontSize: 16)),
           const SizedBox(height: 2),
-          Text(label, 
+          Text(
+            label,
             style: const TextStyle(fontSize: 8),
             textAlign: TextAlign.center,
             maxLines: 1,

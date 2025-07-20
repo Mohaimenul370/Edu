@@ -520,35 +520,66 @@ class _Time2ScreenState extends State<Time2Screen> with TickerProviderStateMixin
       ),
     );
   }
+  Future<void> _checkAnswer(String answer) async {
+    if (showResult) return; // Prevent multiple answers while showing result
 
-  void _checkAnswer(String answer) async {
     setState(() {
       selectedAnswer = answer;
       showResult = true;
       isCorrect = answer == gameQuestions[currentQuestion]['correctAnswer'];
-      _answerAnimationController.forward().then((_) {
-        _answerAnimationController.reverse();
-      });
       if (isCorrect) {
         score++;
-        await speakText('Yay! You got it right! ${gameQuestions[currentQuestion]['correctAnswer']} is correct!');
-      } else {
-        await speakText('Oops! Try again! Think about what we do ${gameQuestions[currentQuestion]['question'].toLowerCase()}');
       }
-      if (currentQuestion == gameQuestions.length - 1) {
-        SharedPreferenceService.saveGameProgress('time_2', score, gameQuestions.length);
-      }
-      if (currentQuestion < gameQuestions.length - 1) {
-        Future.delayed(const Duration(milliseconds: 800), () {
-          _nextQuestion();
-        });
-      } else {
-        Future.delayed(const Duration(milliseconds: 800), () {
-          showGameCompletionDialog(context, score, gameQuestions, setState, _startGame, 'Time_2');
-        });
+    });
+
+    _answerAnimationController.forward().then((_) {
+      _answerAnimationController.reverse();
+    });
+
+    if (isCorrect) {
+      await speakText('Correct!');
+    } else {
+      await speakText('Try again! Think about what we do ${gameQuestions[currentQuestion]['question'].toLowerCase()}');
+    }
+
+    // Shorter delay for better responsiveness
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
+        if (currentQuestion < gameQuestions.length - 1) {
+          setState(() {
+            currentQuestion++;
+            selectedAnswer = null;
+            showResult = false;
+            isCorrect = false;
+          });
+        } else {
+          // Game completed, update progress and show dialog
+          if (mounted) {
+            SharedPreferenceService.saveGameProgress(
+              'time_2',
+              score,
+              gameQuestions.length,
+            ).then((_) {
+              developer.log(
+                  'Game progress saved for time_2: Score $score out of ${gameQuestions.length}');
+              setState(() {
+                SharedPreferenceService.updateOverallProgress();
+              });
+              showGameCompletionDialog(
+                context,
+                score,
+                gameQuestions,
+                setState,
+                _startGame,
+                'time_2',
+              );
+            });
+          }
+        }
       }
     });
   }
+
 
   void _nextQuestion() {
     setState(() {

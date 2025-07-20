@@ -32,10 +32,12 @@ class PositionPatterns2Screen extends StatefulWidget {
   const PositionPatterns2Screen({super.key, this.isGameMode = false});
 
   @override
-  State<PositionPatterns2Screen> createState() => _PositionPatterns2ScreenState();
+  State<PositionPatterns2Screen> createState() =>
+      _PositionPatterns2ScreenState();
 }
 
-class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with TickerProviderStateMixin {
+class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen>
+    with TickerProviderStateMixin {
   final FlutterTts flutterTts = FlutterTts();
   late bool isGameMode;
   int score = 0;
@@ -49,7 +51,7 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
   late AnimationController _answerAnimationController;
   late Animation<double> _answerScaleAnimation;
   bool _isLoading = true;
-  
+
   // Maps to track game progress across different games
   Map<String, double> _gameScores = {};
   Map<String, bool> _gameCompleted = {};
@@ -206,9 +208,10 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
       await SharedPreferenceService.initialize();
       await _loadGameState();
       await _loadScores();
-      
+
       // Debug: Print all values to verify initialization
-      developer.log('=== Debug: All SharedPreference values after initialization ===');
+      developer.log(
+          '=== Debug: All SharedPreference values after initialization ===');
       SharedPreferenceService.debugPrintAllValues();
     } catch (e) {
       developer.log('Error initializing storage: $e');
@@ -221,30 +224,38 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
   Future<void> _loadScores() async {
     try {
       developer.log('Loading game scores from SharedPreferenceService...');
-      
+
       // Load numbers_to_10 progress
-      final numbersScore = SharedPreferenceService.getGameScore('numbers_to_10');
-      final numbersIsCompleted = SharedPreferenceService.isGameCompleted('numbers_to_10');
-      final numbersPercentage = SharedPreferenceService.getGamePercentage('numbers_to_10');
+      final numbersScore =
+          SharedPreferenceService.getGameScore('numbers_to_10');
+      final numbersIsCompleted =
+          SharedPreferenceService.isGameCompleted('numbers_to_10');
+      final numbersPercentage =
+          SharedPreferenceService.getGamePercentage('numbers_to_10');
 
       // Load position_patterns_2 progress
-      final patternsScore = SharedPreferenceService.getGameScore('position_patterns_2');
-      final patternsIsCompleted = SharedPreferenceService.isGameCompleted('position_patterns_2');
-      final patternsPercentage = SharedPreferenceService.getGamePercentage('position_patterns_2');
-      
+      final patternsScore =
+          SharedPreferenceService.getGameScore('position_patterns_2');
+      final patternsIsCompleted =
+          SharedPreferenceService.isGameCompleted('position_patterns_2');
+      final patternsPercentage =
+          SharedPreferenceService.getGamePercentage('position_patterns_2');
+
       // Log the loaded scores
       developer.log('Loaded scores:');
-      developer.log('numbers_to_10: Score=$numbersScore, Completed=$numbersIsCompleted, Percentage=$numbersPercentage%');
-      developer.log('position_patterns_2: Score=$patternsScore, Completed=$patternsIsCompleted, Percentage=$patternsPercentage%');
+      developer.log(
+          'numbers_to_10: Score=$numbersScore, Completed=$numbersIsCompleted, Percentage=$numbersPercentage%');
+      developer.log(
+          'position_patterns_2: Score=$patternsScore, Completed=$patternsIsCompleted, Percentage=$patternsPercentage%');
 
       setState(() {
         // Update the game scores map
         _gameScores['numbers_to_10'] = numbersScore.toDouble();
         _gameCompleted['numbers_to_10'] = numbersIsCompleted;
-        
+
         _gameScores['position_patterns_2'] = patternsScore.toDouble();
         _gameCompleted['position_patterns_2'] = patternsIsCompleted;
-        
+
         // You might want to store these percentages as well
         // _gamePercentages['numbers_to_10'] = numbersPercentage;
         // _gamePercentages['position_patterns_2'] = patternsPercentage;
@@ -257,7 +268,8 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
   Future<void> _loadGameState() async {
     try {
       final savedScore = HiveService.getGameScore('position_patterns_2');
-      final savedPercentage = HiveService.getGamePercentage('position_patterns_2');
+      final savedPercentage =
+          HiveService.getGamePercentage('position_patterns_2');
       final isCompleted = HiveService.isGameCompleted('position_patterns_2');
 
       developer.log('Loaded game state:');
@@ -276,15 +288,6 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
     }
   }
 
-  Future<void> _saveGameState() async {
-    try {
-      await HiveService.saveGameProgress('position_patterns_2', score, shuffledConcepts.length);
-      developer.log('Game state saved successfully');
-    } catch (error) {
-      developer.log('Error saving game state: $error');
-    }
-  }
-
   void _startGame() {
     setState(() {
       isGameMode = true;
@@ -293,7 +296,7 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
       selectedAnswer = null;
       showResult = false;
       shuffledConcepts = List.from(concepts)..shuffle();
-      
+
       // Prepare options based on concept type
       for (var concept in shuffledConcepts) {
         if (concept.name == 'Number Patterns') {
@@ -309,42 +312,69 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
         }
         concept.options.shuffle();
       }
-      
+
       _animationController.reset();
       _animationController.forward();
     });
   }
 
-  void _checkAnswer(String answer) {
+  void _checkAnswer(String answer) async {
+    if (showResult) return; // Prevent multiple answers while showing result
+
+    final currentConcept = shuffledConcepts[currentQuestion];
+    final correctAnswer = currentConcept.example;
+    final isAnswerCorrect = answer == correctAnswer;
+
     setState(() {
       selectedAnswer = answer;
       showResult = true;
-      final currentConcept = shuffledConcepts[currentQuestion];
-      isCorrect = answer == currentConcept.example;
-      _answerAnimationController.forward().then((_) {
-        _answerAnimationController.reverse();
-      });
+      isCorrect = isAnswerCorrect;
       if (isCorrect) {
         score++;
-        _animationController.reset();
-        _animationController.forward();
-        _speakText('Yay! You got it right! ${currentConcept.description}');
-      } else {
-        _speakText('Oops! Try again! Think about the ${currentConcept.name.toLowerCase()}');
       }
-      // Save score if this is the last question
-      if (currentQuestion == shuffledConcepts.length - 1) {
-        SharedPreferenceService.saveGameProgress('position_patterns_2', score, shuffledConcepts.length);
-      }
-      // Add delay for animation/highlight
-      if (currentQuestion < shuffledConcepts.length - 1) {
-        Future.delayed(const Duration(milliseconds: 1000), () {
-          _nextQuestion();
-        });
-      } else {
-        Future.delayed(const Duration(milliseconds: 1000), () {
-          showGameCompletionDialog(context, score, shuffledConcepts, setState, _startGame, 'Position_Patterns_2');
-        });
+    });
+
+    // Trigger scale animation for button press
+    _answerAnimationController.forward().then((_) {
+      _answerAnimationController.reverse();
+    });
+
+    if (isCorrect) {
+      await speakText('Correct! Well done!');
+      _animationController.reset();
+      _animationController.forward();
+    } else {
+      await speakText('Try again! The correct answer is $correctAnswer');
+    }
+
+    // Shorter delay for better responsiveness
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
+        if (currentQuestion < shuffledConcepts.length - 1) {
+          setState(() {
+            currentQuestion++;
+            selectedAnswer = null;
+            showResult = false;
+            isCorrect = false;
+          });
+        } else {
+          // Game completed, update progress and show dialog
+          if (mounted) {
+            SharedPreferenceService.saveGameProgress(
+              'position_patterns_2',
+              score,
+              shuffledConcepts.length,
+            ).then((_) {
+              developer.log(
+                  'Game progress saved for position_patterns_2: Score $score out of ${shuffledConcepts.length}');
+              setState(() {
+                SharedPreferenceService.updateOverallProgress();
+              });
+              showGameCompletionDialog(context, score, shuffledConcepts,
+                  setState, _startGame, 'Position_Patterns_2');
+            });
+          }
+        }
       }
     });
   }
@@ -356,12 +386,13 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
         selectedAnswer = null;
         showResult = false;
       } else {
-        SharedPreferenceService.saveGameProgress('position_patterns_2', score, shuffledConcepts.length);
-        showGameCompletionDialog(context, score, shuffledConcepts, setState, _startGame, 'Position_Patterns_2');
+        SharedPreferenceService.saveGameProgress(
+            'position_patterns_2', score, shuffledConcepts.length);
+        showGameCompletionDialog(context, score, shuffledConcepts, setState,
+            _startGame, 'Position_Patterns_2');
       }
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -523,7 +554,8 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
                   child: LinearProgressIndicator(
                     value: (currentQuestion + 1) / shuffledConcepts.length,
                     backgroundColor: Colors.grey.withOpacity(0.2),
-                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF7B2FF2)),
+                    valueColor:
+                        const AlwaysStoppedAnimation<Color>(Color(0xFF7B2FF2)),
                     minHeight: 8,
                   ),
                 ),
@@ -550,22 +582,28 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
                 // Answer options
                 ...options.map((option) {
                   final isSelected = selectedAnswer == option;
-                  final isCorrectOption = showResult && option == concept.example;
-                  final isIncorrect = showResult && isSelected && !isCorrect;
-                  
+                  final isCorrectOption = option == concept.example;
+                  final showCorrectAnswer = showResult && isCorrectOption;
+                  final showIncorrectSelection =
+                      showResult && isSelected && !isCorrectOption;
+
                   Color backgroundColor;
-                  if (isCorrectOption) {
+                  if (showCorrectAnswer) {
                     backgroundColor = Colors.green.withOpacity(0.9);
-                  } else if (isIncorrect) {
+                  } else if (showIncorrectSelection) {
                     backgroundColor = Colors.red.withOpacity(0.9);
                   } else if (isSelected) {
-                    backgroundColor = Theme.of(context).colorScheme.primary.withOpacity(0.9);
+                    backgroundColor =
+                        Theme.of(context).colorScheme.primary.withOpacity(0.9);
                   } else {
-                    backgroundColor = Theme.of(context).colorScheme.primary.withOpacity(0.7);
+                    backgroundColor =
+                        Theme.of(context).colorScheme.primary.withOpacity(0.7);
                   }
 
                   return ScaleTransition(
-                    scale: (isSelected && showResult) ? _answerScaleAnimation : const AlwaysStoppedAnimation(1.0),
+                    scale: isSelected
+                        ? _answerScaleAnimation
+                        : const AlwaysStoppedAnimation(1.0),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
@@ -576,31 +614,39 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
                       ),
                       child: Material(
                         borderRadius: BorderRadius.circular(12),
-                        elevation: isSelected ? 4 : 1,
+                        elevation: (showCorrectAnswer || showIncorrectSelection)
+                            ? 4
+                            : 1,
                         color: Colors.transparent,
                         child: InkWell(
                           onTap: showResult ? null : () => _checkAnswer(option),
                           borderRadius: BorderRadius.circular(12),
                           child: Container(
                             width: double.infinity,
-                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 16),
                             child: Row(
                               children: [
                                 Expanded(
                                   child: Text(
                                     option,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                                      fontWeight: (showCorrectAnswer ||
+                                              showIncorrectSelection)
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
                                       color: Colors.white,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
-                                if (isCorrectOption)
-                                  const Icon(Icons.check_circle, color: Colors.white, size: 24)
-                                else if (isIncorrect)
-                                  const Icon(Icons.cancel, color: Colors.white, size: 24),
+                                if (showCorrectAnswer)
+                                  const Icon(Icons.check_circle,
+                                      color: Colors.white, size: 24)
+                                else if (showIncorrectSelection)
+                                  const Icon(Icons.cancel,
+                                      color: Colors.white, size: 24),
                               ],
                             ),
                           ),
@@ -624,4 +670,4 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
     flutterTts.stop();
     super.dispose();
   }
-} 
+}

@@ -561,15 +561,22 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
   Future<void> _checkAnswer(String answer) async {  
     setState(() {
       selectedAnswer = answer;
-      showResult = true;
+      showResult = true;  
       isCorrect = answer == shuffledGames[currentQuestion]['correctAnswer'];
       if (isCorrect) {
         score++;
-        await speakText('Correct!');
-      } else {
-        await speakText('Try again!');
       }
     });
+
+    _answerAnimationController.forward().then((_) {
+      _answerAnimationController.reverse();
+    });
+
+    if (isCorrect) {
+      await speakText('Correct!');
+    } else {
+      await speakText('Try again!');
+    }
 
     Future.delayed(const Duration(milliseconds: 1000), () async {
       if (mounted) {

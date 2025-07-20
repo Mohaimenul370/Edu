@@ -15,7 +15,8 @@ class Statistics2Screen extends StatefulWidget {
   State<Statistics2Screen> createState() => _Statistics2ScreenState();
 }
 
-class _Statistics2ScreenState extends State<Statistics2Screen> {
+class _Statistics2ScreenState extends State<Statistics2Screen>
+    with TickerProviderStateMixin {
   late bool isGameMode;
   int currentQuestionIndex = 0;
   bool showConfetti = false;
@@ -24,6 +25,18 @@ class _Statistics2ScreenState extends State<Statistics2Screen> {
   bool showWrongAnimation = false;
   int score = 0;
   String? selectedAnswer;
+  bool showResult = false;
+  bool isCorrect = false;
+
+  // Animation controllers
+  late AnimationController _scaleAnimationController;
+  late Animation<double> _scaleAnimation;
+  late AnimationController _resultAnimationController;
+  late Animation<double> _resultAnimation;
+  late AnimationController _correctAnimationController;
+  late Animation<double> _correctAnimation;
+  late AnimationController _incorrectAnimationController;
+  late Animation<double> _incorrectAnimation;
 
   // Section 1: Venn diagrams, Carroll diagrams, and pictograms
   final List<Map<String, dynamic>> section1Lessons = [
@@ -193,240 +206,128 @@ Green ■■
     section2Lessons.forEach((lesson) {
       print('Loading example: ${lesson['example']}');
     });
-  }
 
-  void _showCompletionDialog() {
-    // Calculate percentage score
-    final percentage = (score / gameQuestions.length) * 100;
-    final isPassed = percentage >= 50.0;
+    // Initialize animation controllers
+    _scaleAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _resultAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _correctAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _incorrectAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
 
-    // Save the game progress (SharedPreferenceService handles the 50% threshold automatically)
-    SharedPreferenceService.saveGameProgress(
-            'statistics_2', score, gameQuestions.length)
-        .then((_) {
-      _showDialog(percentage, isPassed);
-    }).catchError((error) {
-      print('Error saving game progress: $error');
-      _showDialog(percentage, isPassed);
-    });
-  }
-
-  void _showDialog(double percentage, bool isPassed) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => WillPopScope(
-        onWillPop: () async => false,
-        child: Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.emoji_events,
-                    size: 48,
-                    color: Colors.green,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Congratulations!',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  decoration: BoxDecoration(
-                    color: Color(0xFF7B2FF2).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    children: [
-                      const Text(
-                        'Your Score',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF7B2FF2),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '$score / ${gameQuestions.length}',
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF7B2FF2),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${percentage.toStringAsFixed(0)}%',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orange,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  percentage >= 80
-                      ? 'Great job! You\'ve mastered statistics!'
-                      : percentage >= 60
-                          ? 'Good work! Keep practicing!'
-                          : 'Nice try! Practice makes perfect!',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          Navigator.of(context).pop();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF7B2FF2),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.arrow_back, size: 18),
-                            SizedBox(width: 8),
-                            Text('Back'),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          setState(() {
-                            currentQuestionIndex = 0;
-                            isCompleted = false;
-                            showConfetti = false;
-                            showCorrectAnimation = false;
-                            showWrongAnimation = false;
-                            score = 0;
-                            selectedAnswer = null;
-                            gameQuestions.shuffle();
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.refresh, size: 18),
-                            SizedBox(width: 8),
-                            Text('Play Again'),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
+    _scaleAnimation = Tween<double>(begin: 0.95, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _scaleAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+    _resultAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _resultAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+    _correctAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _correctAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+    _incorrectAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _incorrectAnimationController,
+        curve: Curves.easeInOut,
       ),
     );
   }
 
-  void _checkAnswer(String answer) {
-    bool isCorrect =
-        answer == gameQuestions[currentQuestionIndex]['correctAnswer'];
+  void _startGame() {
+    setState(() {
+      score = 0;
+      currentQuestionIndex = 0;
+      selectedAnswer = null;
+      showResult = false;
+      gameQuestions.shuffle();
+    });
+  }
+
+  void _checkAnswer(String answer) async {
+    if (showResult) return; // Prevent multiple answers while showing result
+
+    final correctAnswer = gameQuestions[currentQuestionIndex]['correctAnswer'];
+    final isAnswerCorrect = answer == correctAnswer;
 
     setState(() {
       selectedAnswer = answer;
+      showResult = true;
+      isCorrect = isAnswerCorrect;
       if (isCorrect) {
-        showConfetti = true;
-        showCorrectAnimation = true;
-        showWrongAnimation = false;
         score++;
-      } else {
-        showWrongAnimation = true;
-        showCorrectAnimation = false;
-        showConfetti = false;
       }
+    });
 
-      // Advance to next question after delay for both correct and wrong answers
-      Future.delayed(const Duration(seconds: 1), () {
-        if (mounted) {
+    // Trigger scale animation for button press
+    _scaleAnimationController.forward().then((_) {
+      _scaleAnimationController.reverse();
+    });
+
+    if (isCorrect) {
+      await speakText('Correct!');
+      _correctAnimationController.forward().then((_) {
+        _correctAnimationController.reverse();
+      });
+    } else {
+      await speakText('Try again! The correct answer is $correctAnswer');
+      _incorrectAnimationController.forward().then((_) {
+        _incorrectAnimationController.reverse();
+      });
+    }
+
+    // Shorter delay for better responsiveness
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
+        if (currentQuestionIndex < gameQuestions.length - 1) {
           setState(() {
-            showCorrectAnimation = false;
-            showWrongAnimation = false;
-            showConfetti = false;
+            currentQuestionIndex++;
             selectedAnswer = null;
-
-            if (currentQuestionIndex < gameQuestions.length - 1) {
-              currentQuestionIndex++;
-            } else {
-              isCompleted = true;
-              SharedPreferenceService.saveGameProgress(
-                'statistics_2',
-                score,
-                gameQuestions.length,
-              );
+            showResult = false;
+            isCorrect = false;
+          });
+        } else {
+          // Game completed, update progress and show dialog
+          if (mounted) {
+            SharedPreferenceService.saveGameProgress(
+              'statistics_2',
+              score,
+              gameQuestions.length,
+            ).then((_) {
               developer.log(
                   'Game progress saved for statistics_2: Score $score out of ${gameQuestions.length}');
               setState(() {
                 SharedPreferenceService.updateOverallProgress();
               });
-              _showCompletionDialog();
-            }
-          });
+              showGameCompletionDialog(
+                context,
+                score,
+                gameQuestions,
+                setState,
+                _startGame,
+                'statistics_2',
+              );
+            });
+          }
         }
-      });
+      }
     });
   }
 
@@ -591,59 +492,118 @@ Green ■■
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Question ${currentQuestionIndex + 1} of ${gameQuestions.length}',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.purple[50],
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: Colors.purple[200]!),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Score: $score',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.purple[700],
-                          ),
-                        ),
+              // Progress and Score Card
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        const Color(0xFF7B2FF2).withOpacity(0.7),
+                        const Color(0xFF7B2FF2).withOpacity(0.9),
                       ],
                     ),
                   ),
-                ],
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Question',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white70,
+                            ),
+                          ),
+                          Text(
+                            '${currentQuestionIndex + 1} of ${gameQuestions.length}',
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      ScaleTransition(
+                        scale: _scaleAnimation,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Score: $score',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Progress Bar
+              LinearProgressIndicator(
+                value: (currentQuestionIndex + 1) / gameQuestions.length,
+                backgroundColor: Colors.grey[200],
+                valueColor:
+                    const AlwaysStoppedAnimation<Color>(Color(0xFF7B2FF2)),
+                minHeight: 8,
               ),
               const SizedBox(height: 24),
               Text(
                 gameQuestions[currentQuestionIndex]['question'],
-                style: const TextStyle(fontSize: 20),
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
               if (gameQuestions[currentQuestionIndex]['image'] != null) ...[
-                SvgPicture.asset(
-                  gameQuestions[currentQuestionIndex]['image'],
-                  height: 200,
-                  width: 200,
-                  fit: BoxFit.contain,
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: SvgPicture.asset(
+                    gameQuestions[currentQuestionIndex]['image'],
+                    height: 200,
+                    width: 200,
+                    fit: BoxFit.contain,
+                  ),
                 ),
                 const SizedBox(height: 24),
               ],
@@ -658,51 +618,74 @@ Green ■■
                     final isSelected = option == selectedAnswer;
                     final isCorrect = option ==
                         gameQuestions[currentQuestionIndex]['correctAnswer'];
+                    final showCorrectAnswer = showResult && isCorrect;
+                    final showIncorrectSelection = showResult && isSelected && !isCorrect;
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 16),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        transform: Matrix4.identity()
-                          ..scale(
-                              showWrongAnimation && isSelected ? 0.95 : 1.0),
-                        child: ElevatedButton(
-                          onPressed:
-                              (showCorrectAnimation || showWrongAnimation)
-                                  ? null
-                                  : () => _checkAnswer(option),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.all(16),
-                            backgroundColor: isSelected
-                                ? (isCorrect
+                      child: AnimatedBuilder(
+                        animation: _scaleAnimationController,
+                        builder: (context, child) {
+                          return Transform.scale(
+                            scale: isSelected ? _scaleAnimation.value : 1.0,
+                            child: ElevatedButton(
+                              onPressed: showResult ? null : () => _checkAnswer(option),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.all(16),
+                                backgroundColor: showCorrectAnswer
                                     ? Colors.green[50]
-                                    : Colors.red[50])
-                                : Colors.white,
-                            foregroundColor: isSelected
-                                ? (isCorrect
+                                    : showIncorrectSelection
+                                        ? Colors.red[50]
+                                        : Colors.white,
+                                foregroundColor: showCorrectAnswer
                                     ? Colors.green[700]
-                                    : Colors.red[700])
-                                : Colors.purple,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              side: BorderSide(
-                                color: isSelected
-                                    ? (isCorrect ? Colors.green : Colors.red)
-                                    : Colors.purple,
-                                width: isSelected ? 2 : 1,
+                                    : showIncorrectSelection
+                                        ? Colors.red[700]
+                                        : Colors.purple,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  side: BorderSide(
+                                    color: showCorrectAnswer
+                                        ? Colors.green
+                                        : showIncorrectSelection
+                                            ? Colors.red
+                                            : Colors.purple,
+                                    width: (showCorrectAnswer || showIncorrectSelection) ? 2 : 1,
+                                  ),
+                                ),
+                                elevation: (showCorrectAnswer || showIncorrectSelection) ? 4 : 1,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      option,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: (showCorrectAnswer || showIncorrectSelection)
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                      ),
+                                    ),
+                                  ),
+                                  if (showCorrectAnswer)
+                                    const Icon(
+                                      Icons.check_circle,
+                                      color: Colors.green,
+                                      size: 24,
+                                    ),
+                                  if (showIncorrectSelection)
+                                    const Icon(
+                                      Icons.cancel,
+                                      color: Colors.red,
+                                      size: 24,
+                                    ),
+                                ],
                               ),
                             ),
-                          ),
-                          child: Text(
-                            option,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: isSelected
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                            ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
                     );
                   },
@@ -740,5 +723,14 @@ Green ■■
         body: isGameMode ? _buildGameMode() : _buildLessonMode(),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _scaleAnimationController.dispose();
+    _resultAnimationController.dispose();
+    _correctAnimationController.dispose();
+    _incorrectAnimationController.dispose();
+    super.dispose();
   }
 }

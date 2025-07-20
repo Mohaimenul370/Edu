@@ -206,23 +206,54 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
       _selectedAnswer = answer;
       _showResult = true;
       _isCorrect = answer == _shuffledQuestions[_currentQuestionIndex].correctAnswer;
+      if (_isCorrect) {
+        _score++;
+      }
+    });
+
       _answerAnimationController.forward().then((_) {
         _answerAnimationController.reverse();
       });
-      if (isCorrect) {
-        score++;
-        await speakText('Correct! Well done!');
+
+      if (_isCorrect) {
+        await speakText('Correct!');
       } else {
-        await speakText('Try again! The correct answer is ${shuffledQuestions[currentQuestion].correctAnswer}');
+        await speakText('Try again!');
       }
-      if (_currentQuestionIndex < _shuffledQuestions.length - 1) {
-        Future.delayed(const Duration(milliseconds: 1500), () {
-          _nextQuestion();
-        });
-      } else {
-        Future.delayed(const Duration(milliseconds: 1500), () {
-          showGameCompletionDialog(context, _score, _shuffledQuestions, setState, _startGame, 'Positions');
-        });
+
+      Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
+        if (_currentQuestionIndex < _shuffledQuestions.length - 1) {
+          setState(() {
+            _currentQuestionIndex++;
+            _selectedAnswer = null;
+            _showResult = false;
+            _isCorrect = false;
+          });
+        } else {
+          // Game completed, update progress and show dialog
+          if (mounted) {
+            SharedPreferenceService.saveGameProgress(
+              'positions',
+              _score,
+              _shuffledQuestions.length,
+            ).then((_) {
+              developer.log(
+                  'Game progress saved for positions: Score $_score out of ${_shuffledQuestions.length}');
+              setState(() {
+                SharedPreferenceService.updateOverallProgress();
+              });
+              showGameCompletionDialog(
+                context,
+                _score,
+                _shuffledQuestions,
+                setState,
+                _startGame,
+                'positions',
+              );  
+            });
+          }
+        }
       }
     });
   }
