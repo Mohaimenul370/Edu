@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:kg_education_app/utils/utils_func.dart';
 import 'dart:developer' as developer;
 import '../services/shared_preference_service.dart';
 
@@ -9,7 +10,8 @@ class PositionConcept {
   final String description;
   final IconData icon;
 
-  PositionConcept({required this.name, required this.description, required this.icon});
+  PositionConcept(
+      {required this.name, required this.description, required this.icon});
 }
 
 class PositionGameQuestion {
@@ -107,7 +109,8 @@ class PositionsScreen extends StatefulWidget {
   State<PositionsScreen> createState() => _PositionsScreenState();
 }
 
-class _PositionsScreenState extends State<PositionsScreen> with TickerProviderStateMixin {
+class _PositionsScreenState extends State<PositionsScreen>
+    with TickerProviderStateMixin {
   final FlutterTts flutterTts = FlutterTts();
   int _currentQuestionIndex = 0;
   int _score = 0;
@@ -180,10 +183,10 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
   List<String> _getShuffledOptions(PositionGameQuestion question) {
     // Create a list of options including the correct answer
     final List<String> options = List.from(question.options);
-    
+
     // Shuffle the options to randomize their order
     options.shuffle();
-    
+
     return options;
   }
 
@@ -200,28 +203,61 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
     });
   }
 
-  void _checkAnswer(String answer) {
+  void _checkAnswer(String answer) async {
     setState(() {
       _selectedAnswer = answer;
       _showResult = true;
-      _isCorrect = answer == _shuffledQuestions[_currentQuestionIndex].correctAnswer;
-      _answerAnimationController.forward().then((_) {
-        _answerAnimationController.reverse();
-      });
+      _isCorrect =
+          answer == _shuffledQuestions[_currentQuestionIndex].correctAnswer;
       if (_isCorrect) {
         _score++;
-        _speakText('Correct! Well done!');
-      } else {
-        _speakText('Try again! The correct answer is ${_shuffledQuestions[_currentQuestionIndex].correctAnswer}');
       }
-      if (_currentQuestionIndex < _shuffledQuestions.length - 1) {
-        Future.delayed(const Duration(milliseconds: 1500), () {
-          _nextQuestion();
-        });
-      } else {
-        Future.delayed(const Duration(milliseconds: 1500), () {
-          _showCompletionDialog();
-        });
+    });
+
+    _answerAnimationController.forward().then((_) {
+      _answerAnimationController.reverse();
+    });
+
+    if (_isCorrect) {
+      await speakText('Correct! Well done!');
+    } else {
+      await speakText(
+          'Try again! The correct answer is ${_shuffledQuestions[_currentQuestionIndex].correctAnswer}');
+    }
+
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
+        if (_currentQuestionIndex < _shuffledQuestions.length - 1) {
+          setState(() {
+            _currentQuestionIndex++;
+            _selectedAnswer = null;
+            _showResult = false;
+            _isCorrect = false;
+          });
+        } else {
+          // Game completed, update progress and show dialog
+          if (mounted) {
+            SharedPreferenceService.saveGameProgress(
+              'positions',
+              _score,
+              _shuffledQuestions.length,
+            ).then((_) {
+              developer.log(
+                  'Game progress saved for positions: Score $_score out of ${_shuffledQuestions.length}');
+              setState(() {
+                SharedPreferenceService.updateOverallProgress();
+              });
+              showGameCompletionDialog(
+                context,
+                _score,
+                _shuffledQuestions,
+                setState,
+                _startGame,
+                'positions',
+              );
+            });
+          }
+        }
       }
     });
   }
@@ -232,141 +268,16 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
         _currentQuestionIndex++;
         _selectedAnswer = null;
         _showResult = false;
-        _currentOptions = _getShuffledOptions(_shuffledQuestions[_currentQuestionIndex]);
+        _currentOptions =
+            _getShuffledOptions(_shuffledQuestions[_currentQuestionIndex]);
         _animationController.reset();
         _animationController.forward();
         _speakText('Next question!');
       } else {
-        _showCompletionDialog();
+        showGameCompletionDialog(context, _score, _shuffledQuestions, setState,
+            _startGame, 'Positions');
       }
     });
-  }
-
-  void _showCompletionDialog() async {
-    final percentage = (_score / _shuffledQuestions.length) * 100;
-    final isPassed = percentage >= 50.0;
-    // Save game progress
-    developer.log('Saving game progress for positions:');
-    developer.log('Score: $_score out of ${_shuffledQuestions.length}');
-    developer.log('Percentage: $percentage%');
-    developer.log('Is passed: $isPassed');
-    
-    final saveResult = await SharedPreferenceService.saveGameProgress('positions', _score, _shuffledQuestions.length);
-    developer.log('Save result for positions: $saveResult');
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Header with Icon
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isPassed 
-                    ? Colors.green.withOpacity(0.1)
-                    : Colors.orange.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  isPassed ? Icons.emoji_events : Icons.school,
-                  size: 48,
-                  color: isPassed ? Colors.green : Colors.orange,
-                ),
-              ),
-              const SizedBox(height: 24),
-              // Title
-              Text(
-                isPassed ? 'Congratulations!' : 'Keep Practicing!',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: isPassed ? Colors.green : Colors.orange,
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Score Display
-              Text(
-                'Score: $_score/${_shuffledQuestions.length} (${percentage.toStringAsFixed(1)}%)',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Message
-              Text(
-                isPassed
-                  ? 'You\'ve completed the Positions practice!'
-                  : 'You\'re making progress! Keep practicing to improve.',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 24),
-              // Buttons
-              Wrap(
-                spacing: 16,
-                runSpacing: 16,
-                alignment: WrapAlignment.center,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Close dialog
-                      Navigator.of(context).pop(); // Return to chapter screen
-                    },
-                    icon: const Icon(Icons.arrow_back),
-                    label: const Text('Back'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Close dialog
-                      _startGame();
-                    },
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Play Again'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.secondary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   @override
@@ -410,7 +321,8 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
               borderRadius: BorderRadius.circular(16),
             ),
             child: InkWell(
-              onTap: () => _speakText('${concept.name}. ${concept.description}'),
+              onTap: () =>
+                  _speakText('${concept.name}. ${concept.description}'),
               borderRadius: BorderRadius.circular(16),
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -546,8 +458,10 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
                         aspectRatio: 1.5,
                         child: SingleChildScrollView(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: _shuffledQuestions[_currentQuestionIndex].visual,
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: _shuffledQuestions[_currentQuestionIndex]
+                                .visual,
                           ),
                         ),
                       ),
@@ -570,7 +484,9 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
             Column(
               children: _currentOptions.map((option) {
                 final isSelected = _selectedAnswer == option;
-                final isCorrectOption = _showResult && option == _shuffledQuestions[_currentQuestionIndex].correctAnswer;
+                final isCorrectOption = _showResult &&
+                    option ==
+                        _shuffledQuestions[_currentQuestionIndex].correctAnswer;
                 final isIncorrect = _showResult && isSelected && !_isCorrect;
                 Color backgroundColor;
                 if (isCorrectOption) {
@@ -604,7 +520,9 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
                             color: Colors.transparent,
                             child: InkWell(
                               borderRadius: BorderRadius.circular(12),
-                              onTap: _showResult ? null : () => _checkAnswer(option),
+                              onTap: _showResult
+                                  ? null
+                                  : () => _checkAnswer(option),
                               child: Padding(
                                 padding: const EdgeInsets.all(16.0),
                                 child: Text(
@@ -612,7 +530,9 @@ class _PositionsScreenState extends State<PositionsScreen> with TickerProviderSt
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
-                                    color: isSelected || isCorrectOption || isIncorrect
+                                    color: isSelected ||
+                                            isCorrectOption ||
+                                            isIncorrect
                                         ? Colors.white
                                         : const Color(0xFF6A1B9A),
                                   ),
@@ -817,4 +737,4 @@ class PositionPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
-} 
+}

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:kg_education_app/utils/utils_func.dart';
 import 'dart:developer' as developer;
 import 'dart:math' as math;
 import '../services/preference_service.dart';
@@ -67,7 +68,8 @@ class StatisticsScreen extends StatefulWidget {
   State<StatisticsScreen> createState() => _StatisticsScreenState();
 }
 
-class _StatisticsScreenState extends State<StatisticsScreen> with TickerProviderStateMixin {
+class _StatisticsScreenState extends State<StatisticsScreen>
+    with TickerProviderStateMixin {
   final FlutterTts flutterTts = FlutterTts();
   late bool isGameMode;
   int score = 0;
@@ -77,8 +79,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
   bool isCorrect = false;
   List<Statistic> gameQuestions = [];
   late AnimationController _animationController;
+  late AnimationController _scaleAnimationController;
+  late Animation<double> _scaleAnimation;
   late AnimationController _answerAnimationController;
-  late Animation<double> _animation;
   late Animation<double> _answerScaleAnimation;
   bool _isLoading = true;
   bool _isAnswering = false;
@@ -165,17 +168,19 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
             ),
           ),
           const SizedBox(height: 16),
-          ...content.map((text) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Text(
-              text,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          )).toList(),
+          ...content
+              .map((text) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Text(
+                      text,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ))
+              .toList(),
         ],
       ),
     );
@@ -188,23 +193,26 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
-    _animation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
+    _scaleAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
     );
-
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
+      CurvedAnimation(
+        parent: _scaleAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
     _answerAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    _answerScaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 1.2,
-    ).animate(CurvedAnimation(
+    _answerScaleAnimation =
+        Tween<double>(begin: 1.0, end: 1.2).animate(CurvedAnimation(
       parent: _answerAnimationController,
       curve: Curves.easeInOut,
     ));
-    
+
     isGameMode = widget.isGameMode;
     _initializeTts();
 
@@ -220,12 +228,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
   List<String> _shuffleOptions(String correctAnswer, List<String> allOptions) {
     final random = math.Random(DateTime.now().millisecondsSinceEpoch);
     final shuffled = List<String>.from(allOptions);
-    
+
     // Shuffle multiple times for better randomization
     for (int i = 0; i < 5; i++) {
       shuffled.shuffle(random);
     }
-    
+
     return shuffled;
   }
 
@@ -242,58 +250,60 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
       final questions = [
         Statistic(
           name: '5 fruits',
-          visual: _buildGameVisual('🔢', [
-            '🍎 🍎 🍎',
-            '🍊 🍊',
-            'How many fruits?'
-          ]),
+          visual:
+              _buildGameVisual('🔢', ['🍎 🍎 🍎', '🍊 🍊', 'How many fruits?']),
           description: 'Count all the fruits shown above',
-          options: _shuffleOptions('5 fruits', ['5 fruits', '3 fruits', '4 fruits', '6 fruits']),
+          options: _shuffleOptions(
+              '5 fruits', ['5 fruits', '3 fruits', '4 fruits', '6 fruits']),
         ),
         Statistic(
           name: '1,2,3,4,5',
-          visual: _buildGameVisual('📊', [
-            '3️⃣ 1️⃣ 4️⃣',
-            '2️⃣ 5️⃣',
-            'Sort these numbers'
-          ]),
+          visual: _buildGameVisual(
+              '📊', ['3️⃣ 1️⃣ 4️⃣', '2️⃣ 5️⃣', 'Sort these numbers']),
           description: 'Which shows these numbers in order?',
-          options: _shuffleOptions('1,2,3,4,5', ['1,2,3,4,5', '5,4,3,2,1', '1,3,2,5,4', '2,1,4,3,5']),
+          options: _shuffleOptions('1,2,3,4,5',
+              ['1,2,3,4,5', '5,4,3,2,1', '1,3,2,5,4', '2,1,4,3,5']),
         ),
         Statistic(
           name: 'Elephant is bigger',
-          visual: _buildGameVisual('⚖️', [
-            '🐘 vs 🐁',
-            'Compare size'
-          ]),
+          visual: _buildGameVisual('⚖️', ['🐘 vs 🐁', 'Compare size']),
           description: 'Compare the size of these animals',
-          options: _shuffleOptions('Elephant is bigger', ['Elephant is bigger', 'Mouse is bigger', 'Same size', 'Cannot compare']),
+          options: _shuffleOptions('Elephant is bigger', [
+            'Elephant is bigger',
+            'Mouse is bigger',
+            'Same size',
+            'Cannot compare'
+          ]),
         ),
         Statistic(
           name: 'Animals and Vehicles',
-          visual: _buildGameVisual('👥', [
-            '🐶 🐱 🐰',
-            '🚗 🚌 🚲',
-            'Group similar things'
-          ]),
+          visual: _buildGameVisual(
+              '👥', ['🐶 🐱 🐰', '🚗 🚌 🚲', 'Group similar things']),
           description: 'Which shows a correct grouping?',
-          options: _shuffleOptions('Animals and Vehicles', ['Animals and Vehicles', 'Big and Small', 'Fast and Slow', 'Old and New']),
+          options: _shuffleOptions('Animals and Vehicles', [
+            'Animals and Vehicles',
+            'Big and Small',
+            'Fast and Slow',
+            'Old and New'
+          ]),
         ),
         Statistic(
           name: 'Shoes and Socks',
-          visual: _buildGameVisual('🔄', [
-            '👟 🧦',
-            'Find what goes together'
-          ]),
+          visual: _buildGameVisual('🔄', ['👟 🧦', 'Find what goes together']),
           description: 'Which pair matches together?',
-          options: _shuffleOptions('Shoes and Socks', ['Shoes and Socks', 'Shoes and Hat', 'Socks and Gloves', 'None match']),
+          options: _shuffleOptions('Shoes and Socks', [
+            'Shoes and Socks',
+            'Shoes and Hat',
+            'Socks and Gloves',
+            'None match'
+          ]),
         ),
       ];
-      
+
       // Shuffle the questions order
       final random = math.Random(DateTime.now().millisecondsSinceEpoch);
       questions.shuffle(random);
-      
+
       // Set the shuffled questions as gameQuestions
       gameQuestions = questions;
       _isLoading = false;
@@ -327,8 +337,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
 
   Future<void> _loadGameState() async {
     try {
-      final savedScore = await PreferenceService.getInt('statistics_score') ?? 0;
-      final savedQuestion = await PreferenceService.getInt('statistics_question') ?? 0;
+      final savedScore =
+          await PreferenceService.getInt('statistics_score') ?? 0;
+      final savedQuestion =
+          await PreferenceService.getInt('statistics_question') ?? 0;
 
       setState(() {
         score = savedScore;
@@ -353,9 +365,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
     }
   }
 
-  void _checkAnswer(String answer) {
-    if (_isAnswering) return;
-    _isAnswering = true;
+  void _checkAnswer(String answer) async {
+    if (showResult) return;
 
     setState(() {
       selectedAnswer = answer;
@@ -363,194 +374,55 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
       isCorrect = answer == gameQuestions[currentQuestion].name;
       if (isCorrect) {
         score++;
-        // Save progress immediately without delay
-        SharedPreferenceService.saveGameProgress('statistics', score, gameQuestions.length);
-        _saveGameState();
-        _answerAnimationController.forward().then((_) {
-          _answerAnimationController.reverse();
-        });
       }
+    });
+
+    _scaleAnimationController.forward().then((_) {
+      _scaleAnimationController.reverse();
     });
 
     if (isCorrect) {
-      _speakText('Correct! ${gameQuestions[currentQuestion].name} is right!');
+      await speakText('Correct! Well done!');
     } else {
-      _speakText('Try again!');
+      await speakText(
+          'Try again! The correct answer is ${gameQuestions[currentQuestion].name}');
     }
 
     // Reduced delay from 800ms to 500ms
-    Future.delayed(const Duration(milliseconds: 500), () async {
-      if (!mounted) return;
-      if (currentQuestion < gameQuestions.length - 1) {
-        setState(() {
-          currentQuestion++;
-          selectedAnswer = null;
-          showResult = false;
-          _isAnswering = false;
-          
-          // Re-shuffle options for the next question
-          if (currentQuestion < gameQuestions.length) {
-            final nextQuestion = gameQuestions[currentQuestion];
-            final correctAnswer = nextQuestion.name;
-            final baseOptions = nextQuestion.options;
-            gameQuestions[currentQuestion] = Statistic(
-              name: nextQuestion.name,
-              visual: nextQuestion.visual,
-              description: nextQuestion.description,
-              options: _shuffleOptions(correctAnswer, baseOptions),
+    Future.delayed(const Duration(seconds: 1), () async {
+      if (mounted) {
+        if (currentQuestion < gameQuestions.length - 1) {
+          setState(() {
+            currentQuestion++;
+            selectedAnswer = null;
+            showResult = false;
+            isCorrect = false;
+          });
+        } else {
+          // Game completed, update progress and show dialog
+          if (mounted) {
+            await SharedPreferenceService.saveGameProgress(
+              'statistics_1',
+              score,
+              gameQuestions.length,
             );
+            developer.log(
+                'Game progress saved for statistics_1: Score $score out of ${gameQuestions.length}');
+            setState(() {
+              SharedPreferenceService.updateOverallProgress();
+            });
+            showGameCompletionDialog(context, score, gameQuestions, setState, _startGame, 'Statistics_1');
           }
-        });
-        _animationController.reset();
-        _animationController.forward();
-      } else {
-        setState(() {
-          showResult = false;
-          _isAnswering = false;
-        });
-        
-        if (mounted) {
-          _showGameCompletionDialog();
         }
       }
     });
-  }
-
-  void _showGameCompletionDialog() {
-    final percentage = (score / gameQuestions.length) * 100;
-    final isPassed = percentage >= 50.0;
-    
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Header with Icon
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isPassed 
-                    ? Colors.green.withOpacity(0.1)
-                    : Colors.orange.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  isPassed ? Icons.emoji_events : Icons.school,
-                  size: 48,
-                  color: isPassed ? Colors.green : Colors.orange,
-                ),
-              ),
-              const SizedBox(height: 24),
-              // Title
-              Text(
-                isPassed ? 'Congratulations!' : 'Keep Practicing!',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: isPassed ? Colors.green : Colors.orange,
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Score Display
-              Text(
-                'Score: $score/${gameQuestions.length} (${percentage.toStringAsFixed(1)}%)',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Message
-              Text(
-                isPassed
-                  ? 'You\'ve completed the Statistics practice!'
-                  : 'You\'re making progress! Keep practicing to improve.',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 24),
-              // Buttons
-              Wrap(
-                spacing: 16,
-                runSpacing: 16,
-                alignment: WrapAlignment.center,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Close dialog
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/analysis',
-                        (route) => route.isFirst || route.settings.name == '/main_menu',
-                      );
-                    },
-                    icon: const Icon(Icons.arrow_back),
-                    label: const Text('Back'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Close dialog
-                      _startGame();
-                    },
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Play Again'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.secondary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        if (isGameMode) {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            '/analysis',
-            (route) => route.isFirst || route.settings.name == '/main_menu',
-          );
-          return false;
-        }
-        return true;
+        return true; // Allow default back behavior
       },
       child: Scaffold(
         appBar: AppBar(
@@ -560,8 +432,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
             onPressed: () {
               if (isGameMode) {
                 Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/analysis',
-                  (route) => route.isFirst || route.settings.name == '/main_menu',
+                  '/statistics_1',
+                  (route) =>
+                      route.isFirst || route.settings.name == '/main_menu',
                 );
               } else {
                 Navigator.of(context).pop();
@@ -579,22 +452,24 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       'Learn about Statistics',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.purple,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.purple,
+                              ),
                       textAlign: TextAlign.center,
                     ),
                   ),
                   const SizedBox(height: 20),
                   _buildLessonSection(),
                 ] else ...[
-                  if (_isLoading || gameQuestions.isEmpty) 
+                  if (_isLoading || gameQuestions.isEmpty)
                     const Center(
                       child: Padding(
                         padding: EdgeInsets.all(32.0),
                         child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.purple),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.purple),
                         ),
                       ),
                     )
@@ -624,7 +499,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
             borderRadius: BorderRadius.circular(16),
           ),
           child: InkWell(
-            onTap: () => _speakText('${statistic.name}. ${statistic.description}'),
+            onTap: () =>
+                _speakText('${statistic.name}. ${statistic.description}'),
             borderRadius: BorderRadius.circular(16),
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -733,7 +609,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
           ),
           const SizedBox(height: 20),
           // Answer Options
-          ...gameQuestions[currentQuestion].options.map((option) => _buildAnswerOption(option)).toList(),
+          ...gameQuestions[currentQuestion]
+              .options
+              .map((option) => _buildAnswerOption(option))
+              .toList(),
           const SizedBox(height: 20),
         ],
       ),
@@ -743,58 +622,92 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
   Widget _buildAnswerOption(String option) {
     final isSelected = selectedAnswer == option;
     final isCorrectOption = option == gameQuestions[currentQuestion].name;
-    final isIncorrect = isSelected && !isCorrectOption;
-    
+    final isIncorrect = showResult && isSelected && !isCorrectOption;
+    final isCorrect = showResult && isCorrectOption;
+
+    Color backgroundColor;
+    if (isCorrect) {
+      backgroundColor = Colors.green.shade100;
+    } else if (isIncorrect) {
+      backgroundColor = Colors.red.shade100;
+    } else if (isSelected) {
+      backgroundColor = Colors.purple.withOpacity(0.2);
+    } else {
+      backgroundColor = Colors.white;
+    }
+
+    Color borderColor;
+    if (isCorrect) {
+      borderColor = Colors.green;
+    } else if (isIncorrect) {
+      borderColor = Colors.red;
+    } else if (isSelected) {
+      borderColor = Colors.purple;
+    } else {
+      borderColor = Colors.grey.shade300;
+    }
+
     return AnimatedBuilder(
-      animation: _answerAnimationController,
+      animation: _scaleAnimationController,
       builder: (context, child) {
-        return Transform.scale(
-          scale: isSelected && isCorrectOption ? _answerScaleAnimation.value : 1.0,
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            decoration: BoxDecoration(
-              color: _getOptionColor(isSelected, isCorrectOption, isIncorrect),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: _getBorderColor(isSelected, isCorrectOption, isIncorrect),
-                width: 2,
-              ),
-              boxShadow: [
-                if (isSelected)
-                  BoxShadow(
-                    color: _getShadowColor(isCorrectOption),
-                    blurRadius: 8,
-                    spreadRadius: 2,
-                  ),
-              ],
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: selectedAnswer == null ? () => _checkAnswer(option) : null,
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Transform.scale(
+            scale: isSelected ? _scaleAnimation.value : 1.0,
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              decoration: BoxDecoration(
+                color: backgroundColor,
                 borderRadius: BorderRadius.circular(12),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          option,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: _getTextColor(isSelected, isCorrectOption, isIncorrect),
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                border: Border.all(
+                  color: borderColor,
+                  width: 2,
+                ),
+                boxShadow: [
+                  if (isSelected)
+                    BoxShadow(
+                      color: Colors.purple.withOpacity(0.3),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: showResult ? null : () => _checkAnswer(option),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Text(
+                            option,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: isCorrect
+                                  ? Colors.green
+                                  : isIncorrect
+                                      ? Colors.red
+                                      : isSelected
+                                          ? Colors.purple
+                                          : Colors.black87,
+                              fontWeight: isSelected || isCorrect
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
                           ),
                         ),
-                      ),
-                      if (showResult && isSelected)
-                        Icon(
-                          isCorrectOption ? Icons.check_circle : Icons.cancel,
-                          color: isCorrectOption ? Colors.green : Colors.red,
-                          size: 24,
-                        ),
-                    ],
+                        if (isCorrect)
+                          const Icon(Icons.check_circle, color: Colors.green, size: 24)
+                        else if (isIncorrect)
+                          const Icon(Icons.cancel, color: Colors.red, size: 24),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -805,14 +718,17 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
     );
   }
 
-  Color _getOptionColor(bool isSelected, bool isCorrectOption, bool isIncorrect) {
-    if (!showResult) return isSelected ? Colors.purple.withOpacity(0.1) : Colors.white;
+  Color _getOptionColor(
+      bool isSelected, bool isCorrectOption, bool isIncorrect) {
+    if (!showResult)
+      return isSelected ? Colors.purple.withOpacity(0.1) : Colors.white;
     if (isSelected && isCorrectOption) return Colors.green.withOpacity(0.2);
     if (isIncorrect) return Colors.red.withOpacity(0.2);
     return Colors.white;
   }
 
-  Color _getBorderColor(bool isSelected, bool isCorrectOption, bool isIncorrect) {
+  Color _getBorderColor(
+      bool isSelected, bool isCorrectOption, bool isIncorrect) {
     if (!showResult) return isSelected ? Colors.purple : Colors.grey.shade300;
     if (isSelected && isCorrectOption) return Colors.green;
     if (isIncorrect) return Colors.red;
@@ -828,14 +744,16 @@ class _StatisticsScreenState extends State<StatisticsScreen> with TickerProvider
 
   Color _getShadowColor(bool isCorrectOption) {
     if (!showResult) return Colors.purple.withOpacity(0.3);
-    return isCorrectOption ? Colors.green.withOpacity(0.3) : Colors.red.withOpacity(0.3);
+    return isCorrectOption
+        ? Colors.green.withOpacity(0.3)
+        : Colors.red.withOpacity(0.3);
   }
 
   @override
   void dispose() {
     flutterTts.stop();
     _animationController.dispose();
-    _answerAnimationController.dispose();
+    _scaleAnimationController.dispose();
     super.dispose();
   }
-} 
+}

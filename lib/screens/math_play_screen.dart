@@ -72,8 +72,7 @@ class _MathPlayScreenState extends State<MathPlayScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context).pop();
-        return false;
+        return true; // Allow default back behavior
       },
       child: Scaffold(
         backgroundColor: const Color(0xFF6A1B9A),

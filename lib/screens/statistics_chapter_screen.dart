@@ -22,7 +22,7 @@ class _StatisticsChapterScreenState extends State<StatisticsChapterScreen> {
   Future<void> _loadScore() async {
     await SharedPreferenceService.initialize();
     setState(() {
-      score = SharedPreferenceService.getGamePercentage('statistics');
+      score = SharedPreferenceService.getGamePercentage('statistics_1');
       isLoading = false;
     });
   }

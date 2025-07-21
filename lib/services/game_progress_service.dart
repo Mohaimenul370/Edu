@@ -6,21 +6,21 @@ class GameProgressService {
   static const String _scorePrefix = 'game_score_';
   static const String _completedPrefix = 'game_completed_';
   static final List<String> requiredGames = [
-    'fractions',
     'numbers_to_10',
     'numbers_to_20',
     'shapes',
+    'fractions',
     'fractions_2',
-    'measures',
     'geometry',
-    'time',
-    'statistics',
-    'measures_2',
-    'positions_2',
-    'statistics_2',
-    'positions',
-    'time_2',
     'geometry_2',
+    'measures',
+    'measures_2',
+    'positions',
+    'statistics_1',
+    'time',
+    'statistics_2',
+    'time_2',
+    'position_patterns_2'
   ];
 
   static SharedPreferences? _prefs;

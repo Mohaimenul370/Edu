@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kg_education_app/services/hive_service.dart';
+import 'package:kg_education_app/utils/utils_func.dart';
 import 'package:kg_education_app/widgets/confetti_widget.dart';
 import 'package:kg_education_app/widgets/position_visual.dart';
 import 'package:kg_education_app/widgets/pattern_visual.dart';
@@ -31,10 +32,12 @@ class PositionPatterns2Screen extends StatefulWidget {
   const PositionPatterns2Screen({super.key, this.isGameMode = false});
 
   @override
-  State<PositionPatterns2Screen> createState() => _PositionPatterns2ScreenState();
+  State<PositionPatterns2Screen> createState() =>
+      _PositionPatterns2ScreenState();
 }
 
-class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with TickerProviderStateMixin {
+class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen>
+    with TickerProviderStateMixin {
   final FlutterTts flutterTts = FlutterTts();
   late bool isGameMode;
   int score = 0;
@@ -207,7 +210,8 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
       await _loadScores();
       
       // Debug: Print all values to verify initialization
-      developer.log('=== Debug: All SharedPreference values after initialization ===');
+      developer.log(
+          '=== Debug: All SharedPreference values after initialization ===');
       SharedPreferenceService.debugPrintAllValues();
     } catch (e) {
       developer.log('Error initializing storage: $e');
@@ -222,19 +226,27 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
       developer.log('Loading game scores from SharedPreferenceService...');
       
       // Load numbers_to_10 progress
-      final numbersScore = SharedPreferenceService.getGameScore('numbers_to_10');
-      final numbersIsCompleted = SharedPreferenceService.isGameCompleted('numbers_to_10');
-      final numbersPercentage = SharedPreferenceService.getGamePercentage('numbers_to_10');
+      final numbersScore =
+          SharedPreferenceService.getGameScore('numbers_to_10');
+      final numbersIsCompleted =
+          SharedPreferenceService.isGameCompleted('numbers_to_10');
+      final numbersPercentage =
+          SharedPreferenceService.getGamePercentage('numbers_to_10');
 
       // Load position_patterns_2 progress
-      final patternsScore = SharedPreferenceService.getGameScore('position_patterns_2');
-      final patternsIsCompleted = SharedPreferenceService.isGameCompleted('position_patterns_2');
-      final patternsPercentage = SharedPreferenceService.getGamePercentage('position_patterns_2');
+      final patternsScore =
+          SharedPreferenceService.getGameScore('position_patterns_2');
+      final patternsIsCompleted =
+          SharedPreferenceService.isGameCompleted('position_patterns_2');
+      final patternsPercentage =
+          SharedPreferenceService.getGamePercentage('position_patterns_2');
       
       // Log the loaded scores
       developer.log('Loaded scores:');
-      developer.log('numbers_to_10: Score=$numbersScore, Completed=$numbersIsCompleted, Percentage=$numbersPercentage%');
-      developer.log('position_patterns_2: Score=$patternsScore, Completed=$patternsIsCompleted, Percentage=$patternsPercentage%');
+      developer.log(
+          'numbers_to_10: Score=$numbersScore, Completed=$numbersIsCompleted, Percentage=$numbersPercentage%');
+      developer.log(
+          'position_patterns_2: Score=$patternsScore, Completed=$patternsIsCompleted, Percentage=$patternsPercentage%');
 
       setState(() {
         // Update the game scores map
@@ -256,7 +268,8 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
   Future<void> _loadGameState() async {
     try {
       final savedScore = HiveService.getGameScore('position_patterns_2');
-      final savedPercentage = HiveService.getGamePercentage('position_patterns_2');
+      final savedPercentage =
+          HiveService.getGamePercentage('position_patterns_2');
       final isCompleted = HiveService.isGameCompleted('position_patterns_2');
 
       developer.log('Loaded game state:');
@@ -272,15 +285,6 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
       }
     } catch (error) {
       developer.log('Error loading game state: $error');
-    }
-  }
-
-  Future<void> _saveGameState() async {
-    try {
-      await HiveService.saveGameProgress('position_patterns_2', score, shuffledConcepts.length);
-      developer.log('Game state saved successfully');
-    } catch (error) {
-      developer.log('Error saving game state: $error');
     }
   }
 
@@ -314,36 +318,63 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
     });
   }
 
-  void _checkAnswer(String answer) {
+  void _checkAnswer(String answer) async {
+    if (showResult) return; // Prevent multiple answers while showing result
+
+    final currentConcept = shuffledConcepts[currentQuestion];
+    final correctAnswer = currentConcept.example;
+    final isAnswerCorrect = answer == correctAnswer;
+
     setState(() {
       selectedAnswer = answer;
       showResult = true;
-      final currentConcept = shuffledConcepts[currentQuestion];
-      isCorrect = answer == currentConcept.example;
-      _answerAnimationController.forward().then((_) {
-        _answerAnimationController.reverse();
-      });
+      isCorrect = isAnswerCorrect;
       if (isCorrect) {
         score++;
+      }
+    });
+
+    // Trigger scale animation for button press
+    _answerAnimationController.forward().then((_) {
+      _answerAnimationController.reverse();
+    });
+
+    if (isCorrect) {
+      await speakText('Correct! Well done!');
         _animationController.reset();
         _animationController.forward();
-        _speakText('Yay! You got it right! ${currentConcept.description}');
       } else {
-        _speakText('Oops! Try again! Think about the ${currentConcept.name.toLowerCase()}');
+      await speakText('Try again! The correct answer is $correctAnswer');
       }
-      // Save score if this is the last question
-      if (currentQuestion == shuffledConcepts.length - 1) {
-        SharedPreferenceService.saveGameProgress('position_patterns_2', score, shuffledConcepts.length);
-      }
-      // Add delay for animation/highlight
+
+    // Shorter delay for better responsiveness
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted) {
       if (currentQuestion < shuffledConcepts.length - 1) {
-        Future.delayed(const Duration(milliseconds: 1000), () {
-          _nextQuestion();
+          setState(() {
+            currentQuestion++;
+            selectedAnswer = null;
+            showResult = false;
+            isCorrect = false;
         });
       } else {
-        Future.delayed(const Duration(milliseconds: 1000), () {
-          _showCompletionDialog();
+          // Game completed, update progress and show dialog
+          if (mounted) {
+            SharedPreferenceService.saveGameProgress(
+              'position_patterns_2',
+              score,
+              shuffledConcepts.length,
+            ).then((_) {
+              developer.log(
+                  'Game progress saved for position_patterns_2: Score $score out of ${shuffledConcepts.length}');
+              setState(() {
+                SharedPreferenceService.updateOverallProgress();
+              });
+              showGameCompletionDialog(context, score, shuffledConcepts,
+                  setState, _startGame, 'Position_Patterns_2');
         });
+          }
+        }
       }
     });
   }
@@ -355,176 +386,12 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
         selectedAnswer = null;
         showResult = false;
       } else {
-        SharedPreferenceService.saveGameProgress('position_patterns_2', score, shuffledConcepts.length);
-        _showCompletionDialog();
+        SharedPreferenceService.saveGameProgress(
+            'position_patterns_2', score, shuffledConcepts.length);
+        showGameCompletionDialog(context, score, shuffledConcepts, setState,
+            _startGame, 'Position_Patterns_2');
       }
     });
-  }
-
-  void _showCompletionDialog() {
-    final percentage = (score / shuffledConcepts.length) * 100;
-    
-    // Save game progress
-    SharedPreferenceService.saveGameProgress('positions_2', score, shuffledConcepts.length);
-    
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => WillPopScope(
-        onWillPop: () async => false,
-        child: Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.emoji_events,
-                    size: 48,
-                    color: Colors.green,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Congratulations!',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  decoration: BoxDecoration(
-                    color: Color(0xFF7B2FF2).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    children: [
-                      const Text(
-                        'Your Score',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF7B2FF2),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '$score / ${shuffledConcepts.length}',
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF7B2FF2),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${percentage.toStringAsFixed(0)}%',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orange,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  percentage >= 80 
-                      ? 'Great job! You\'ve mastered position patterns!'
-                      : percentage >= 60
-                          ? 'Good work! Keep practicing!'
-                          : 'Nice try! Practice makes perfect!',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          Navigator.of(context).pop();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF7B2FF2),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.arrow_back, size: 18),
-                            SizedBox(width: 8),
-                            Text('Back'),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          _startGame();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.refresh, size: 18),
-                            SizedBox(width: 8),
-                            Text('Play Again'),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   @override
@@ -667,6 +534,76 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
       ),
       child: Column(
         children: [
+          Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        const Color(0xFF7B2FF2).withOpacity(0.7),
+                        const Color(0xFF7B2FF2).withOpacity(0.9),
+                      ],
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      
+                          const Text(
+                            'Question:',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Text(
+                            '${currentQuestion + 1} of ${shuffledConcepts.length}',
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),),
+                      ScaleTransition(
+                        scale: _answerScaleAnimation,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Score: $score',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16.0),
@@ -687,7 +624,8 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
                   child: LinearProgressIndicator(
                     value: (currentQuestion + 1) / shuffledConcepts.length,
                     backgroundColor: Colors.grey.withOpacity(0.2),
-                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF7B2FF2)),
+                    valueColor:
+                        const AlwaysStoppedAnimation<Color>(Color(0xFF7B2FF2)),
                     minHeight: 8,
                   ),
                 ),
@@ -714,22 +652,28 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
                 // Answer options
                 ...options.map((option) {
                   final isSelected = selectedAnswer == option;
-                  final isCorrectOption = showResult && option == concept.example;
-                  final isIncorrect = showResult && isSelected && !isCorrect;
+                  final isCorrectOption = option == concept.example;
+                  final showCorrectAnswer = showResult && isCorrectOption;
+                  final showIncorrectSelection =
+                      showResult && isSelected && !isCorrectOption;
                   
                   Color backgroundColor;
-                  if (isCorrectOption) {
+                  if (showCorrectAnswer) {
                     backgroundColor = Colors.green.withOpacity(0.9);
-                  } else if (isIncorrect) {
+                  } else if (showIncorrectSelection) {
                     backgroundColor = Colors.red.withOpacity(0.9);
                   } else if (isSelected) {
-                    backgroundColor = Theme.of(context).colorScheme.primary.withOpacity(0.9);
+                    backgroundColor =
+                        Theme.of(context).colorScheme.primary.withOpacity(0.9);
                   } else {
-                    backgroundColor = Theme.of(context).colorScheme.primary.withOpacity(0.7);
+                    backgroundColor =
+                        Theme.of(context).colorScheme.primary.withOpacity(0.7);
                   }
 
                   return ScaleTransition(
-                    scale: (isSelected && showResult) ? _answerScaleAnimation : const AlwaysStoppedAnimation(1.0),
+                    scale: isSelected
+                        ? _answerScaleAnimation
+                        : const AlwaysStoppedAnimation(1.0),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
@@ -740,31 +684,39 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen> with 
                       ),
                       child: Material(
                         borderRadius: BorderRadius.circular(12),
-                        elevation: isSelected ? 4 : 1,
+                        elevation: (showCorrectAnswer || showIncorrectSelection)
+                            ? 4
+                            : 1,
                         color: Colors.transparent,
                         child: InkWell(
                           onTap: showResult ? null : () => _checkAnswer(option),
                           borderRadius: BorderRadius.circular(12),
                           child: Container(
                             width: double.infinity,
-                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 16),
                             child: Row(
                               children: [
                                 Expanded(
                                   child: Text(
                                     option,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                                      fontWeight: (showCorrectAnswer ||
+                                              showIncorrectSelection)
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
                                       color: Colors.white,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
-                                if (isCorrectOption)
-                                  const Icon(Icons.check_circle, color: Colors.white, size: 24)
-                                else if (isIncorrect)
-                                  const Icon(Icons.cancel, color: Colors.white, size: 24),
+                                if (showCorrectAnswer)
+                                  const Icon(Icons.check_circle,
+                                      color: Colors.white, size: 24)
+                                else if (showIncorrectSelection)
+                                  const Icon(Icons.cancel,
+                                      color: Colors.white, size: 24),
                               ],
                             ),
                           ),

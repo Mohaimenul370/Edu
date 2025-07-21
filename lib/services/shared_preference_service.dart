@@ -17,7 +17,7 @@ class SharedPreferenceService {
     'measures',
     'measures_2',
     'positions',
-    'statistics',
+    'statistics_1',
     'time',
     'statistics_2',
     'time_2',
@@ -458,6 +458,7 @@ class SharedPreferenceService {
     final overallProgress = (completedChapters / allChapters.length) * 100;
     await _prefs!.setDouble(_mathPlayKey, overallProgress);
     developer.log('Overall progress updated: $overallProgress%');
+    print('Overall progress updated: $overallProgress%');
   }
 
   // Get overall progress
@@ -465,5 +466,9 @@ class SharedPreferenceService {
     final progress = _prefs?.getDouble(_mathPlayKey) ?? 0.0;
     final roundedProgress = double.parse(progress.toStringAsFixed(2)); // Round to 2 decimal places
     return roundedProgress; // No need to clamp here as it's already handled in _updateOverallProgress
+  }
+
+  static void updateOverallProgress() {
+    _updateOverallProgress();
   }
 } 
