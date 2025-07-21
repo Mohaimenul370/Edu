@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:kg_education_app/utils/utils_func.dart';
 import 'dart:developer' as developer;
 import 'dart:math' as math;
 import '../services/preference_service.dart';
@@ -21,7 +22,8 @@ class MeasuresScreen extends StatefulWidget {
   State<MeasuresScreen> createState() => _MeasuresScreenState();
 }
 
-class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStateMixin {
+class _MeasuresScreenState extends State<MeasuresScreen>
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -35,6 +37,10 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
   String? selectedAnswer;
   bool _isLoading = true;
   List<Map<String, dynamic>> shuffledGames = [];
+
+  // Add scale animation controller following fractions_screen.dart pattern
+  late AnimationController _scaleAnimationController;
+  late Animation<double> _scaleAnimation;
 
   final List<Map<String, dynamic>> games = [
     {
@@ -123,7 +129,9 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
                   color: Color(0xFF7B2FF2),
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: Center(child: Text('Door A', style: TextStyle(color: Colors.white))),
+                child: Center(
+                    child:
+                        Text('Door A', style: TextStyle(color: Colors.white))),
               ),
             ],
           ),
@@ -137,7 +145,9 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
                   color: Color(0xFFf357a8),
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: Center(child: Text('Door B', style: TextStyle(color: Colors.white))),
+                child: Center(
+                    child:
+                        Text('Door B', style: TextStyle(color: Colors.white))),
               ),
             ],
           ),
@@ -185,7 +195,8 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
         'Elephant, Giraffe, Dog'
       ],
       'correctAnswer': 'Dog, Elephant, Giraffe',
-      'explanation': 'The dog is the shortest, then the elephant, and the giraffe is the tallest.',
+      'explanation':
+          'The dog is the shortest, then the elephant, and the giraffe is the tallest.',
     },
     {
       'question': 'Which vehicle is longer?',
@@ -198,7 +209,8 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
               Expanded(
                 child: Column(
                   children: [
-                    Icon(Icons.directions_bus, size: 80, color: Color(0xFF7B2FF2)),
+                    Icon(Icons.directions_bus,
+                        size: 80, color: Color(0xFF7B2FF2)),
                     Text('Bus', style: TextStyle(fontSize: 14)),
                   ],
                 ),
@@ -212,7 +224,8 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
               Expanded(
                 child: Column(
                   children: [
-                    Icon(Icons.directions_car, size: 60, color: Color(0xFFf357a8)),
+                    Icon(Icons.directions_car,
+                        size: 60, color: Color(0xFFf357a8)),
                     Text('Car', style: TextStyle(fontSize: 14)),
                   ],
                 ),
@@ -230,23 +243,12 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
   @override
   void initState() {
     super.initState();
-    _initializeTts();
     _initializeAnimation();
     _initializeAnswerAnimation();
     _shuffleGames();
     if (widget.isGameMode) {
       _startGame();
     }
-  }
-
-  Future<void> _initializeTts() async {
-    await flutterTts.setLanguage("en-US");
-    await flutterTts.setPitch(1.0);
-    await flutterTts.setSpeechRate(0.5);
-  }
-
-  Future<void> _speakText(String text) async {
-    await flutterTts.speak(text);
   }
 
   void _initializeAnimation() {
@@ -272,6 +274,18 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
     ));
 
     _animationController.forward();
+
+    // Add scale animation controller following fractions_screen.dart pattern
+    _scaleAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
+      CurvedAnimation(
+        parent: _scaleAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
   }
 
   void _initializeAnswerAnimation() {
@@ -289,16 +303,14 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
     ));
   }
 
-
-
   void _shuffleGames() {
     final random = math.Random();
-    
+
     // Create shuffled copies of games with shuffled options
     shuffledGames = games.map((game) {
       final shuffledOptions = List<String>.from(game['options']);
       shuffledOptions.shuffle(random);
-      
+
       return {
         'question': game['question'],
         'visual': game['visual'],
@@ -307,7 +319,7 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
         'explanation': game['explanation'],
       };
     }).toList();
-    
+
     // Shuffle the order of games as well
     shuffledGames.shuffle(random);
   }
@@ -355,66 +367,70 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
                   style: TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 24),
-                ...games.map((game) => Card(
-                  margin: const EdgeInsets.only(bottom: 24),
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          game['question'],
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF7B2FF2),
+                ...games
+                    .map((game) => Card(
+                          margin: const EdgeInsets.only(bottom: 24),
+                          elevation: 4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: game['visual'],
-                        ),
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFf357a8).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Icon(
-                                Icons.lightbulb_outline,
-                                color: Color(0xFFf357a8),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  game['explanation'],
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  game['question'],
                                   style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Color(0xFFf357a8),
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF7B2FF2),
                                   ),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 16),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[100],
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: game['visual'],
+                                ),
+                                const SizedBox(height: 16),
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFf357a8)
+                                        .withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Icon(
+                                        Icons.lightbulb_outline,
+                                        color: Color(0xFFf357a8),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          game['explanation'],
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Color(0xFFf357a8),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )).toList(),
+                        ))
+                    .toList(),
               ],
             ),
           ),
@@ -425,7 +441,7 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
 
   Widget _buildGameMode() {
     final game = shuffledGames[currentQuestion];
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Measures Game'),
@@ -451,7 +467,8 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
                       style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [Color(0xFF7B2FF2), Color(0xFFf357a8)],
@@ -511,41 +528,79 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
                 SizedBox(height: 32),
                 ...game['options'].map<Widget>((option) {
                   final bool isSelected = selectedAnswer == option;
-                  final bool showResult = this.showResult;
-                  final bool isCorrect = option == game['correctAnswer'];
+                  final bool isCorrect = showResult && option == game['correctAnswer'];
+                  final bool isIncorrect = showResult && isSelected && option != game['correctAnswer'];
                   
+                  Color backgroundColor;
+                  if (isCorrect) {
+                    backgroundColor = Colors.green.shade100;
+                  } else if (isIncorrect) {
+                    backgroundColor = Colors.red.shade100;
+                  } else if (isSelected) {
+                    backgroundColor = const Color(0xFF7B2FF2).withOpacity(0.2);
+                  } else {
+                    backgroundColor = Colors.white;
+                  }
+
+                  Color borderColor;
+                  if (isCorrect) {
+                    borderColor = Colors.green;
+                  } else if (isIncorrect) {
+                    borderColor = Colors.red;
+                  } else if (isSelected) {
+                    borderColor = const Color(0xFF7B2FF2);
+                  } else {
+                    borderColor = Colors.grey.shade300;
+                  }
+
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16),
-                    child: AnimatedContainer(
-                      duration: Duration(milliseconds: 300),
-                      child: ElevatedButton(
-                        onPressed: showResult ? null : () => _checkAnswer(option),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: showResult
-                              ? (isCorrect
-                                  ? Colors.green
-                                  : (isSelected ? Colors.red : Colors.grey[300]))
-                              : (isSelected ? Color(0xFF7B2FF2) : Colors.white),
-                          foregroundColor: showResult
-                              ? Colors.white
-                              : (isSelected ? Colors.white : Color(0xFF7B2FF2)),
-                          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                          shape: RoundedRectangleBorder(
+                    child: AnimatedBuilder(
+                      animation: _scaleAnimationController,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: isSelected ? _scaleAnimation.value : 1.0,
+                          child: Material(
                             borderRadius: BorderRadius.circular(12),
+                            elevation: isSelected ? 4 : 1,
+                            child: InkWell(
+                              onTap: showResult ? null : () => _checkAnswer(option),
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                                decoration: BoxDecoration(
+                                  color: backgroundColor,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: borderColor,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Center(
+                                      child: Text(
+                                        option,
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: isSelected || isCorrect ? FontWeight.bold : FontWeight.normal,
+                                        ),
+                                      ),
+                                    ),
+                                    if (isCorrect)
+                                      const Icon(Icons.check_circle, color: Colors.green, size: 24)
+                                    else if (isIncorrect)
+                                      const Icon(Icons.cancel, color: Colors.red, size: 24),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ),
-                          side: BorderSide(
-                            color: showResult
-                                ? (isCorrect
-                                    ? Colors.green
-                                    : (isSelected ? Colors.red : Colors.grey))
-                                : (isSelected ? Color(0xFF7B2FF2) : Colors.grey),
-                          ),
-                        ),
-                        child: Text(
-                          option,
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ),
+                        );
+                      },
                     ),
                   );
                 }).toList(),
@@ -557,206 +612,61 @@ class _MeasuresScreenState extends State<MeasuresScreen> with TickerProviderStat
     );
   }
 
-  void _checkAnswer(String answer) {
+  Future<void> _checkAnswer(String answer) async {
+    if (showResult) return; // Prevent multiple answers while showing result
+
     setState(() {
       selectedAnswer = answer;
       showResult = true;
       isCorrect = answer == shuffledGames[currentQuestion]['correctAnswer'];
       if (isCorrect) {
         score++;
-        _speakText('Correct!');
-      } else {
-        _speakText('Try again!');
       }
     });
 
-    Future.delayed(const Duration(milliseconds: 1000), () {
+    _scaleAnimationController.forward().then((_) {
+      _scaleAnimationController.reverse();
+    });
+
+    if (isCorrect) {
+      await speakText('Correct! Well done!');
+    } else {
+      await speakText('Try again! The correct answer is ${shuffledGames[currentQuestion]['correctAnswer']}');
+    }
+
+    Future.delayed(const Duration(seconds: 1), () async {
       if (mounted) {
         if (currentQuestion < shuffledGames.length - 1) {
           setState(() {
             currentQuestion++;
             selectedAnswer = null;
             showResult = false;
+            isCorrect = false;
           });
         } else {
           // Show completion dialog after the last question
-          _showCompletionDialog();
+          if (mounted) {
+            await SharedPreferenceService.saveGameProgress(
+              'measures',
+              score,
+              shuffledGames.length,
+            );
+            developer.log('Game progress saved for measures: Score $score out of ${shuffledGames.length}');
+            setState(() {
+              SharedPreferenceService.updateOverallProgress();
+            });
+            showGameCompletionDialog(context, score, shuffledGames, setState, _startGame, 'measures');
+          }
         }
       }
     });
   }
 
-  void _showCompletionDialog() {
-    final percentage = (score / shuffledGames.length) * 100;
-    
-    // Save progress immediately when game is complete
-    SharedPreferenceService.saveGameProgress('measures', score, shuffledGames.length);
-    
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => WillPopScope(
-        onWillPop: () async => false,
-        child: Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.emoji_events,
-                    size: 48,
-                    color: Colors.green,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Congratulations!',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  decoration: BoxDecoration(
-                    color: Color(0xFF7B2FF2).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    children: [
-                      const Text(
-                        'Your Score',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF7B2FF2),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '$score / ${shuffledGames.length}',
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF7B2FF2),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${percentage.toStringAsFixed(0)}%',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.orange,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  percentage >= 80 
-                      ? 'Great job! You\'ve mastered these measurements!'
-                      : percentage >= 60
-                          ? 'Good work! Keep practicing!'
-                          : 'Nice try! Practice makes perfect!',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close dialog
-                          Navigator.of(context).pop(); // Go back to measures_chapter_screen.dart
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF7B2FF2),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.arrow_back, size: 18),
-                            SizedBox(width: 8),
-                            Text('Back'),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          _startGame(); // This will re-shuffle and restart
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.refresh, size: 18),
-                            SizedBox(width: 8),
-                            Text('Play Again'),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   void dispose() {
     _animationController.dispose();
-    _answerAnimationController.dispose();
+    _scaleAnimationController.dispose();
     flutterTts.stop();
     super.dispose();
   }
-} 
+}

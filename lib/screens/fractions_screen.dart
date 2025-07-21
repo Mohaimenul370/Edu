@@ -177,7 +177,7 @@ class _FractionsScreenState extends State<FractionsScreen> with TickerProviderSt
     });
   }
 
-  void _checkAnswer(String answer) {
+  void _checkAnswer(String answer)async {
     if (showResult) return;
     setState(() {
       selectedAnswer = answer;
@@ -193,10 +193,9 @@ class _FractionsScreenState extends State<FractionsScreen> with TickerProviderSt
     });
 
     if (isCorrect) {
-      
-      _speakText('Correct!');
+      await speakText('Correct! Well done!');
     } else {
-      _speakText('Try again!');
+      await speakText('Try again! The correct answer is ${shuffledActivities[currentQuestion].name}');
     }
 
     Future.delayed(const Duration(seconds: 1), () async {

@@ -46,6 +46,8 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
   bool isCorrect = false;
   late AnimationController _scaleAnimationController;
   late Animation<double> _scaleAnimation;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
   late List<Fractions2GameQuestion> shuffledQuestions;
 
   @override
@@ -53,16 +55,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
     super.initState();
     isGameMode = widget.isGameMode;
     _initializeTts();
-    _scaleAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
-      CurvedAnimation(
-        parent: _scaleAnimationController,
-        curve: Curves.easeInOut,
-      ),
-    );
+    _initializeAnimations();
     if (isGameMode) {
       _startGame();
     }
@@ -76,6 +69,30 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
 
   Future<void> _speakText(String text) async {
     await flutterTts.speak(text);
+  }
+
+  void _initializeAnimations() {
+    _scaleAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
+      CurvedAnimation(
+        parent: _scaleAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
   }
 
   void _startGame() {
@@ -92,13 +109,16 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
     });
   }
 
-  void _checkAnswer(String answer) {
+  void _checkAnswer(String answer) async {
     if (showResult) return; // Prevent multiple answers while showing result
+
+    final correctAnswer = shuffledQuestions[currentQuestion].answer;
+    final isAnswerCorrect = answer == correctAnswer;
 
     setState(() {
       selectedAnswer = answer;
-      showResult = true;    
-      isCorrect = answer == shuffledQuestions[currentQuestion].answer;
+      showResult = true;
+      isCorrect = isAnswerCorrect;
       if (isCorrect) {
         score++;
       }
@@ -109,9 +129,9 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
     });
 
     if (isCorrect) {
-      _speakText('Correct!');
+      await speakText('Correct! Well done!');
     } else {
-      _speakText('Try again!');
+      await speakText('Try again! The correct answer is $correctAnswer');
     }
 
     // Shorter delay for better responsiveness
@@ -132,12 +152,19 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
               score,
               shuffledQuestions.length,
             ).then((_) {
-              developer.log('Game progress saved for fractions_2: Score $score out of ${shuffledQuestions.length}');
+              developer.log(
+                  'Game progress saved for fractions_2: Score $score out of ${shuffledQuestions.length}');
               setState(() {
                 SharedPreferenceService.updateOverallProgress();
               });
-              // _showCompletionDialog();
-              showGameCompletionDialog(context, score, shuffledQuestions, setState, _startGame, 'Fractions 2');
+              showGameCompletionDialog(
+                context,
+                score,
+                shuffledQuestions,
+                setState,
+                _startGame,
+                'fractions_2',
+              );
             });
           }
         }
@@ -147,7 +174,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Color(0xFF7B2FF2),
       statusBarIconBrightness: Brightness.light,
       systemNavigationBarColor: Color(0xFF7B2FF2),
@@ -168,7 +195,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
             fontSize: 20,
           ),
         ),
-        backgroundColor: Color(0xFF7B2FF2),
+        backgroundColor: const Color(0xFF7B2FF2),
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -231,7 +258,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
             fontSize: 20,
           ),
         ),
-        backgroundColor: Color(0xFF7B2FF2),
+        backgroundColor: const Color(0xFF7B2FF2),
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -274,8 +301,8 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color(0xFF7B2FF2).withOpacity(0.1),
-                Color(0xFFF3EFFF).withOpacity(0.1),
+                const Color(0xFF7B2FF2).withOpacity(0.1),
+                const Color(0xFFF3EFFF).withOpacity(0.1),
               ],
             ),
             borderRadius: BorderRadius.circular(16),
@@ -290,7 +317,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                     'Question',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Color(0xFF7B2FF2).withOpacity(0.7),
+                      color: const Color(0xFF7B2FF2).withOpacity(0.7),
                     ),
                   ),
                   Text(
@@ -309,12 +336,12 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Color(0xFF7B2FF2).withOpacity(0.1),
+                    color: const Color(0xFF7B2FF2).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.star,
                         color: Color(0xFF7B2FF2),
                         size: 20,
@@ -322,7 +349,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                       const SizedBox(width: 4),
                       Text(
                         'Score: $score',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF7B2FF2),
@@ -350,41 +377,89 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
         const SizedBox(height: 24),
         ...q.options.map((option) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 6),
-              child: ElevatedButton(
-                onPressed: showResult ? null : () => _checkAnswer(option),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: option == selectedAnswer
-                      ? (isCorrect ? Colors.green : Colors.red)
-                      : Color(0xFF7B2FF2).withOpacity(0.1),
-                  foregroundColor: Color(0xFF7B2FF2),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-                child: Text(
-                  option,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              child: AnimatedBuilder(
+                animation: _scaleAnimationController,
+                builder: (context, child) {
+                  final isSelected = option == selectedAnswer;
+                  final isCorrectOption = option == q.answer;
+                  final showCorrectAnswer = showResult && isCorrectOption;
+                  final showIncorrectSelection =
+                      showResult && isSelected && !isCorrectOption;
+
+                  return Transform.scale(
+                    scale: isSelected ? _scaleAnimation.value : 1.0,
+                    child: ElevatedButton(
+                      onPressed: showResult ? null : () => _checkAnswer(option),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: showCorrectAnswer
+                            ? Colors.green.withOpacity(0.2)
+                            : showIncorrectSelection
+                                ? Colors.red.withOpacity(0.2)
+                                : const Color(0xFF7B2FF2).withOpacity(0.1),
+                        foregroundColor: showCorrectAnswer
+                            ? Colors.green[700]
+                            : showIncorrectSelection
+                                ? Colors.red[700]
+                                : const Color(0xFF7B2FF2),
+                        elevation: (showCorrectAnswer || showIncorrectSelection)
+                            ? 4
+                            : 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(
+                            color: showCorrectAnswer
+                                ? Colors.green
+                                : showIncorrectSelection
+                                    ? Colors.red
+                                    : Colors.transparent,
+                            width: (showCorrectAnswer || showIncorrectSelection)
+                                ? 2
+                                : 0,
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        
+                        children: [
+                          Center(
+                            child: Text(
+                              option,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: (showCorrectAnswer ||
+                                        showIncorrectSelection)
+                                    ? FontWeight.bold
+                                    : FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          if (showCorrectAnswer)
+                            const Icon(Icons.check_circle,
+                                color: Colors.green, size: 24)
+                          else if (showIncorrectSelection)
+                            const Icon(Icons.cancel,
+                                color: Colors.red, size: 24),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
             )),
-        const SizedBox(height: 24),
-        if (showResult)
-          Text(
-            isCorrect ? 'Correct!' : 'Try again!',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: isCorrect ? Colors.green : Colors.red,
-            ),
-          ),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    _scaleAnimationController.dispose();
+    _animationController.dispose();
+    flutterTts.stop();
+    super.dispose();
   }
 
   // --- LESSON CONTENT ---
@@ -411,8 +486,8 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                         height: 100,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          border:
-                              Border.all(color: Color(0xFF7B2FF2), width: 2),
+                          border: Border.all(
+                              color: const Color(0xFF7B2FF2), width: 2),
                         ),
                       ),
                       Align(
@@ -420,14 +495,14 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                         child: Container(
                           width: 2,
                           height: 100,
-                          color: Color(0xFF7B2FF2),
+                          color: const Color(0xFF7B2FF2),
                         ),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 10),
-                Text(
+                const SizedBox(height: 10),
+                const Text(
                   '½',
                   style: TextStyle(
                     fontSize: 32,
@@ -525,7 +600,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                         height: 50,
                         decoration: BoxDecoration(
                           color: Colors.blue[400],
-                          borderRadius: BorderRadius.only(
+                          borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(6),
                             topRight: Radius.circular(6),
                           ),
@@ -534,9 +609,10 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                     ],
                   ),
                 ),
-                SizedBox(width: 20),
-                Icon(Icons.arrow_forward, color: Color(0xFF7B2FF2), size: 24),
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
+                const Icon(Icons.arrow_forward,
+                    color: Color(0xFF7B2FF2), size: 24),
+                const SizedBox(width: 20),
                 Row(
                   children: [
                     Container(
@@ -553,7 +629,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                             height: 40,
                             decoration: BoxDecoration(
                               color: Colors.blue[400],
-                              borderRadius: BorderRadius.only(
+                              borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(6),
                                 topRight: Radius.circular(6),
                               ),
@@ -562,7 +638,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                         ],
                       ),
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Container(
                       width: 40,
                       height: 80,
@@ -577,7 +653,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                             height: 40,
                             decoration: BoxDecoration(
                               color: Colors.blue[400],
-                              borderRadius: BorderRadius.only(
+                              borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(6),
                                 topRight: Radius.circular(6),
                               ),
@@ -603,14 +679,14 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 shape: BoxShape.circle,
-                border: Border.all(color: Color(0xFF7B2FF2), width: 2),
+                border: Border.all(color: const Color(0xFF7B2FF2), width: 2),
               ),
               child: CustomPaint(
                 painter: ClockPainter(
                   hourAngle: 2 * 30 * 3.14159 / 180 - 3.14159 / 2, // 2 o'clock
                   minuteAngle:
                       6 * 30 * 3.14159 / 180 - 3.14159 / 2, // 30 minutes
-                  color: Color(0xFF7B2FF2),
+                  color: const Color(0xFF7B2FF2),
                 ),
               ),
             ),
@@ -630,25 +706,25 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                     ...List.generate(
                         5,
                         (index) => Padding(
-                              padding: EdgeInsets.all(4),
+                              padding: const EdgeInsets.all(4),
                               child: Container(
                                 width: 20,
                                 height: 20,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   color: Color(0xFF7B2FF2),
                                   shape: BoxShape.circle,
                                 ),
                               ),
                             )),
-                    SizedBox(width: 20),
+                    const SizedBox(width: 20),
                     ...List.generate(
                         5,
                         (index) => Padding(
-                              padding: EdgeInsets.all(4),
+                              padding: const EdgeInsets.all(4),
                               child: Container(
                                 width: 20,
                                 height: 20,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   color: Color(0xFF7B2FF2),
                                   shape: BoxShape.circle,
                                 ),
@@ -656,8 +732,8 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                             )),
                   ],
                 ),
-                SizedBox(height: 10),
-                Text(
+                const SizedBox(height: 10),
+                const Text(
                   '5 + 5 = 10',
                   style: TextStyle(
                     fontSize: 24,
@@ -682,7 +758,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                 Container(
                   width: 120,
                   height: 120,
-                  margin: EdgeInsets.all(8),
+                  margin: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.orange[100],
                     shape: BoxShape.circle,
@@ -705,7 +781,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                           height: 120,
                           decoration: BoxDecoration(
                             color: Colors.orange[300],
-                            borderRadius: BorderRadius.only(
+                            borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(60),
                               bottomLeft: Radius.circular(60),
                             ),
@@ -745,7 +821,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Colors.blue[400],
-                                borderRadius: BorderRadius.only(
+                                borderRadius: const BorderRadius.only(
                                   topLeft: Radius.circular(6),
                                   topRight: Radius.circular(6),
                                 ),
@@ -756,9 +832,10 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                       ),
                     ),
                   ),
-                  SizedBox(width: 20),
-                  Icon(Icons.arrow_forward, color: Color(0xFF7B2FF2), size: 24),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
+                  const Icon(Icons.arrow_forward,
+                      color: Color(0xFF7B2FF2), size: 24),
+                  const SizedBox(width: 20),
                   Row(
                     children: [
                       Container(
@@ -777,7 +854,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: Colors.blue[400],
-                                    borderRadius: BorderRadius.only(
+                                    borderRadius: const BorderRadius.only(
                                       topLeft: Radius.circular(6),
                                       topRight: Radius.circular(6),
                                     ),
@@ -792,7 +869,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                           ),
                         ),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Container(
                         width: 40,
                         height: 80,
@@ -809,7 +886,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: Colors.blue[400],
-                                    borderRadius: BorderRadius.only(
+                                    borderRadius: const BorderRadius.only(
                                       topLeft: Radius.circular(6),
                                       topRight: Radius.circular(6),
                                     ),
@@ -842,14 +919,14 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 shape: BoxShape.circle,
-                border: Border.all(color: Color(0xFF7B2FF2), width: 2),
+                border: Border.all(color: const Color(0xFF7B2FF2), width: 2),
               ),
               child: CustomPaint(
                 painter: ClockPainter(
                   hourAngle: 2 * 30 * 3.14159 / 180 - 3.14159 / 2, // 2 o'clock
                   minuteAngle:
                       6 * 30 * 3.14159 / 180 - 3.14159 / 2, // 30 minutes
-                  color: Color(0xFF7B2FF2),
+                  color: const Color(0xFF7B2FF2),
                   isLarge: true,
                 ),
               ),
@@ -907,14 +984,14 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
                   alignment: WrapAlignment.center,
                   children: List.generate(
                       18,
-                      (index) => Icon(
+                      (index) => const Icon(
                             Icons.apple,
                             color: Color(0xFF7B2FF2),
                             size: 24,
                           )),
                 ),
-                SizedBox(height: 16),
-                Text(
+                const SizedBox(height: 16),
+                const Text(
                   '÷ 2 = ?',
                   style: TextStyle(
                     fontSize: 24,

@@ -171,7 +171,7 @@ class _ShapesScreenState extends State<ShapesScreen> with SingleTickerProviderSt
     });
   }
 
-  void _checkAnswer(String answer) {
+  void _checkAnswer(String answer) async {
     setState(() {
       selectedAnswer = answer;
       showResult = true;
@@ -184,9 +184,9 @@ class _ShapesScreenState extends State<ShapesScreen> with SingleTickerProviderSt
 
     if (isCorrect) {
       score++;
-      _speakText('Correct! This is a ${questions[currentQuestion].correctAnswer}');
+      await speakText('Correct! This is a ${questions[currentQuestion].correctAnswer}');
     } else {
-      _speakText('Try again! The correct answer is ${questions[currentQuestion].correctAnswer}');
+      await speakText('Try again! The correct answer is ${questions[currentQuestion].correctAnswer}');
     }
 
     Future.delayed(const Duration(milliseconds: 1000), () async {

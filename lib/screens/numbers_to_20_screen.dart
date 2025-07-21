@@ -207,18 +207,15 @@ class _NumbersTo20ScreenState extends State<NumbersTo20Screen> with TickerProvid
     await flutterTts.setSpeechRate(0.5);
   }
 
-  Future<void> _speakText(String text) async {
-    await flutterTts.speak(text);
-  }
 
   void _handleActivityTap(NumberActivity activity, int index) {
-    _speakText('${activity.title}. ${activity.instruction}');
+    speakText('${activity.title}. ${activity.instruction}');
     setState(() {
       expandedIndex = expandedIndex == index ? null : index;
     });
   }
 
-  void _checkAnswer(int selectedOption) {
+  void _checkAnswer(int selectedOption) async{
     if (!mounted) return;
     
     setState(() {
@@ -232,8 +229,12 @@ class _NumbersTo20ScreenState extends State<NumbersTo20Screen> with TickerProvid
     });
 
     if (isCorrect) {
-      score++;
-    }
+        score++;
+        await speakText('Correct! Well done!');
+      } else {
+        await speakText('Try again! The correct answer is ${questions[currentQuestion].correctAnswer}');
+      }
+
 
     Future.delayed(const Duration(milliseconds: 1000), () async {
       if (!mounted) return;
