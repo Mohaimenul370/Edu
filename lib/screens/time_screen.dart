@@ -70,6 +70,8 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
   late final List<TimeConcept> concepts;
   late AnimationController _animationController;
   late Animation<double> _animation;
+  late AnimationController _scaleAnimationController;
+  late Animation<double> _scaleAnimation;
   late AnimationController _answerAnimationController;
   late Animation<double> _answerScaleAnimation;
   late Animation<Color?> _answerColorAnimation;
@@ -99,6 +101,17 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
     _animation = CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
+    );
+
+    _scaleAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
+      CurvedAnimation(
+        parent: _scaleAnimationController,
+        curve: Curves.easeInOut,
+      ),
     );
 
     _answerAnimationController = AnimationController(
@@ -279,14 +292,15 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
         score++;
       }
 
-      _answerAnimationController.forward().then((_) {
-        _answerAnimationController.reverse();
+      _scaleAnimationController.forward().then((_) {
+        _scaleAnimationController.reverse();
       });
     });
     if (isCorrect) {
-      await speakText('Correct!');
+      await speakText('Correct! Well done!');
     } else {
-      await speakText('Try again!');
+      await speakText(
+          'Try again! The correct answer is ${gameQuestions[currentQuestion]['correctAnswer']}');
     }
 
     // Add animation and feedback delay before moving to next question
@@ -323,6 +337,7 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
   @override
   void dispose() {
     _animationController.dispose();
+    _scaleAnimationController.dispose();
     _answerAnimationController.dispose();
     flutterTts.stop();
     super.dispose();
@@ -500,65 +515,93 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
 
   Widget _buildAnswerOption(String option) {
     final isSelected = selectedAnswer == option;
-    final isCorrectOption =
-        option == gameQuestions[currentQuestion]['correctAnswer'];
-    final isIncorrect = isSelected && !isCorrectOption;
+    final isCorrectOption = option == gameQuestions[currentQuestion]['correctAnswer'];
+    final isIncorrect = _showingFeedback && isSelected && !isCorrectOption;
+    final isCorrect = _showingFeedback && isCorrectOption;
+
+    Color backgroundColor;
+    if (isCorrect) {
+      backgroundColor = Colors.green.shade100;
+    } else if (isIncorrect) {
+      backgroundColor = Colors.red.shade100;
+    } else if (isSelected) {
+      backgroundColor = Colors.purple.withOpacity(0.2);
+    } else {
+      backgroundColor = Colors.white;
+    }
+
+    Color borderColor;
+    if (isCorrect) {
+      borderColor = Colors.green;
+    } else if (isIncorrect) {
+      borderColor = Colors.red;
+    } else if (isSelected) {
+      borderColor = Colors.purple;
+    } else {
+      borderColor = Colors.grey.shade300;
+    }
 
     return AnimatedBuilder(
-      animation: _answerAnimationController,
+      animation: _scaleAnimationController,
       builder: (context, child) {
-        return Transform.scale(
-          scale:
-              isSelected && isCorrectOption ? _answerScaleAnimation.value : 1.0,
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            decoration: BoxDecoration(
-              color: _getOptionColor(isSelected, isCorrectOption, isIncorrect),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color:
-                    _getBorderColor(isSelected, isCorrectOption, isIncorrect),
-                width: 2,
-              ),
-              boxShadow: [
-                if (isSelected)
-                  BoxShadow(
-                    color: _getShadowColor(isCorrectOption),
-                    blurRadius: 8,
-                    spreadRadius: 2,
-                  ),
-              ],
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap:
-                    selectedAnswer == null ? () => _checkAnswer(option) : null,
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Transform.scale(
+            scale: isSelected ? _scaleAnimation.value : 1.0,
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              decoration: BoxDecoration(
+                color: backgroundColor,
                 borderRadius: BorderRadius.circular(12),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          option,
-                          style: TextStyle(
-                            color: _getTextColor(
-                                isSelected, isCorrectOption, isIncorrect),
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
+                border: Border.all(
+                  color: borderColor,
+                  width: 2,
+                ),
+                boxShadow: [
+                  if (isSelected)
+                    BoxShadow(
+                      color: Colors.purple.withOpacity(0.3),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _showingFeedback ? null : () => _checkAnswer(option),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Text(
+                            option,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: isCorrect
+                                  ? Colors.green
+                                  : isIncorrect
+                                      ? Colors.red
+                                      : isSelected
+                                          ? Colors.purple
+                                          : Colors.black87,
+                              fontWeight: isSelected || isCorrect
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
                           ),
                         ),
-                      ),
-                      if (_showingFeedback && isSelected)
-                        Icon(
-                          isCorrectOption ? Icons.check_circle : Icons.cancel,
-                          color: isCorrectOption ? Colors.green : Colors.red,
-                        ),
-                    ],
+                        if (isCorrect)
+                          const Icon(Icons.check_circle, color: Colors.green, size: 24)
+                        else if (isIncorrect)
+                          const Icon(Icons.cancel, color: Colors.red, size: 24),
+                      ],
+                    ),
                   ),
                 ),
               ),

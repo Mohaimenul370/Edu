@@ -79,8 +79,9 @@ class _StatisticsScreenState extends State<StatisticsScreen>
   bool isCorrect = false;
   List<Statistic> gameQuestions = [];
   late AnimationController _animationController;
+  late AnimationController _scaleAnimationController;
+  late Animation<double> _scaleAnimation;
   late AnimationController _answerAnimationController;
-  late Animation<double> _animation;
   late Animation<double> _answerScaleAnimation;
   bool _isLoading = true;
   bool _isAnswering = false;
@@ -192,19 +193,22 @@ class _StatisticsScreenState extends State<StatisticsScreen>
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
-    _animation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
+    _scaleAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
     );
-
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
+      CurvedAnimation(
+        parent: _scaleAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
     _answerAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    _answerScaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 1.2,
-    ).animate(CurvedAnimation(
+    _answerScaleAnimation =
+        Tween<double>(begin: 1.0, end: 1.2).animate(CurvedAnimation(
       parent: _answerAnimationController,
       curve: Curves.easeInOut,
     ));
@@ -373,14 +377,15 @@ class _StatisticsScreenState extends State<StatisticsScreen>
       }
     });
 
-    _answerAnimationController.forward().then((_) {
-      _answerAnimationController.reverse();
+    _scaleAnimationController.forward().then((_) {
+      _scaleAnimationController.reverse();
     });
 
     if (isCorrect) {
       await speakText('Correct! Well done!');
     } else {
-      await speakText('Try again! The correct answer is ${gameQuestions[currentQuestion].name}');
+      await speakText(
+          'Try again! The correct answer is ${gameQuestions[currentQuestion].name}');
     }
 
     // Reduced delay from 800ms to 500ms
@@ -411,129 +416,6 @@ class _StatisticsScreenState extends State<StatisticsScreen>
         }
       }
     });
-  }
-
-  void _showGameCompletionDialog() {
-    final percentage = (score / gameQuestions.length) * 100;
-    final isPassed = percentage >= 50.0;
-    setState(() {});
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Header with Icon
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isPassed
-                      ? Colors.green.withOpacity(0.1)
-                      : Colors.orange.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  isPassed ? Icons.emoji_events : Icons.school,
-                  size: 48,
-                  color: isPassed ? Colors.green : Colors.orange,
-                ),
-              ),
-              const SizedBox(height: 24),
-              // Title
-              Text(
-                isPassed ? 'Congratulations!' : 'Keep Practicing!',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: isPassed ? Colors.green : Colors.orange,
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Score Display
-              Text(
-                'Score: $score/${gameQuestions.length} (${percentage.toStringAsFixed(1)}%)',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Message
-              Text(
-                isPassed
-                    ? 'You\'ve completed the Statistics practice!'
-                    : 'You\'re making progress! Keep practicing to improve.',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 24),
-              // Buttons
-              Wrap(
-                spacing: 16,
-                runSpacing: 16,
-                alignment: WrapAlignment.center,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).pop(); 
-                      Navigator.of(context).pop(); 
-                      
-                    },
-                    icon: const Icon(Icons.arrow_back),
-                    label: const Text('Back'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Close dialog
-                      _startGame();
-                    },
-                    icon: const Icon(Icons.refresh),
-                    label: const Text('Play Again'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.secondary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   @override
@@ -740,65 +622,92 @@ class _StatisticsScreenState extends State<StatisticsScreen>
   Widget _buildAnswerOption(String option) {
     final isSelected = selectedAnswer == option;
     final isCorrectOption = option == gameQuestions[currentQuestion].name;
-    final isIncorrect = isSelected && !isCorrectOption;
+    final isIncorrect = showResult && isSelected && !isCorrectOption;
+    final isCorrect = showResult && isCorrectOption;
+
+    Color backgroundColor;
+    if (isCorrect) {
+      backgroundColor = Colors.green.shade100;
+    } else if (isIncorrect) {
+      backgroundColor = Colors.red.shade100;
+    } else if (isSelected) {
+      backgroundColor = Colors.purple.withOpacity(0.2);
+    } else {
+      backgroundColor = Colors.white;
+    }
+
+    Color borderColor;
+    if (isCorrect) {
+      borderColor = Colors.green;
+    } else if (isIncorrect) {
+      borderColor = Colors.red;
+    } else if (isSelected) {
+      borderColor = Colors.purple;
+    } else {
+      borderColor = Colors.grey.shade300;
+    }
 
     return AnimatedBuilder(
-      animation: _answerAnimationController,
+      animation: _scaleAnimationController,
       builder: (context, child) {
-        return Transform.scale(
-          scale:
-              isSelected && isCorrectOption ? _answerScaleAnimation.value : 1.0,
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            decoration: BoxDecoration(
-              color: _getOptionColor(isSelected, isCorrectOption, isIncorrect),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color:
-                    _getBorderColor(isSelected, isCorrectOption, isIncorrect),
-                width: 2,
-              ),
-              boxShadow: [
-                if (isSelected)
-                  BoxShadow(
-                    color: _getShadowColor(isCorrectOption),
-                    blurRadius: 8,
-                    spreadRadius: 2,
-                  ),
-              ],
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap:
-                    selectedAnswer == null ? () => _checkAnswer(option) : null,
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Transform.scale(
+            scale: isSelected ? _scaleAnimation.value : 1.0,
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              decoration: BoxDecoration(
+                color: backgroundColor,
                 borderRadius: BorderRadius.circular(12),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          option,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: _getTextColor(
-                                isSelected, isCorrectOption, isIncorrect),
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
+                border: Border.all(
+                  color: borderColor,
+                  width: 2,
+                ),
+                boxShadow: [
+                  if (isSelected)
+                    BoxShadow(
+                      color: Colors.purple.withOpacity(0.3),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: showResult ? null : () => _checkAnswer(option),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Text(
+                            option,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: isCorrect
+                                  ? Colors.green
+                                  : isIncorrect
+                                      ? Colors.red
+                                      : isSelected
+                                          ? Colors.purple
+                                          : Colors.black87,
+                              fontWeight: isSelected || isCorrect
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
                           ),
                         ),
-                      ),
-                      if (showResult && isSelected)
-                        Icon(
-                          isCorrectOption ? Icons.check_circle : Icons.cancel,
-                          color: isCorrectOption ? Colors.green : Colors.red,
-                          size: 24,
-                        ),
-                    ],
+                        if (isCorrect)
+                          const Icon(Icons.check_circle, color: Colors.green, size: 24)
+                        else if (isIncorrect)
+                          const Icon(Icons.cancel, color: Colors.red, size: 24),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -844,7 +753,7 @@ class _StatisticsScreenState extends State<StatisticsScreen>
   void dispose() {
     flutterTts.stop();
     _animationController.dispose();
-    _answerAnimationController.dispose();
+    _scaleAnimationController.dispose();
     super.dispose();
   }
 }

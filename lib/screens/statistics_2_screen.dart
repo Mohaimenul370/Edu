@@ -488,9 +488,9 @@ Green ■■
       children: [
         // ConfettiWidget removed as part of unused code cleanup
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(4.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Progress and Score Card
               Card(
@@ -510,18 +510,16 @@ Green ■■
                       ],
                     ),
                   ),
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(4),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                      
                           const Text(
-                            'Question',
+                            'Question:',
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.white70,
+                              color: Colors.white,
                             ),
                           ),
                           Text(
@@ -530,10 +528,7 @@ Green ■■
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
+                            ),),
                       ScaleTransition(
                         scale: _scaleAnimation,
                         child: Container(
@@ -567,15 +562,16 @@ Green ■■
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              
+              const SizedBox(height: 10),
               // Progress Bar
-              LinearProgressIndicator(
-                value: (currentQuestionIndex + 1) / gameQuestions.length,
-                backgroundColor: Colors.grey[200],
-                valueColor:
-                    const AlwaysStoppedAnimation<Color>(Color(0xFF7B2FF2)),
-                minHeight: 8,
-              ),
+              // LinearProgressIndicator(
+              //   value: (currentQuestionIndex + 1) / gameQuestions.length,
+              //   backgroundColor: Colors.grey[200],
+              //   valueColor:
+              //       const AlwaysStoppedAnimation<Color>(Color(0xFF7B2FF2)),
+              //   minHeight: 8,
+              // ),
               const SizedBox(height: 24),
               Text(
                 gameQuestions[currentQuestionIndex]['question'],
@@ -622,77 +618,96 @@ Green ■■
                     final showIncorrectSelection =
                         showResult && isSelected && !isCorrect;
 
+                    Color backgroundColor;
+                    if (showCorrectAnswer) {
+                      backgroundColor = Colors.green.shade100;
+                    } else if (showIncorrectSelection) {
+                      backgroundColor = Colors.red.shade100;
+                    } else if (isSelected) {
+                      backgroundColor =
+                          const Color(0xFF7B2FF2).withOpacity(0.2);
+                    } else {
+                      backgroundColor = Colors.white;
+                    }
+
+                    Color borderColor;
+                    if (showCorrectAnswer) {
+                      borderColor = Colors.green;
+                    } else if (showIncorrectSelection) {
+                      borderColor = Colors.red;
+                    } else if (isSelected) {
+                      borderColor = const Color(0xFF7B2FF2);
+                    } else {
+                      borderColor = Colors.grey.shade300;
+                    }
+
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
+                      padding: const EdgeInsets.only(bottom: 8,left: 16,right: 16),
                       child: AnimatedBuilder(
                         animation: _scaleAnimationController,
                         builder: (context, child) {
                           return Transform.scale(
                             scale: isSelected ? _scaleAnimation.value : 1.0,
-                            child: ElevatedButton(
-                              onPressed: showResult
-                                  ? null
-                                  : () => _checkAnswer(option),
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.all(16),
-                                backgroundColor: showCorrectAnswer
-                                    ? Colors.green[50]
-                                    : showIncorrectSelection
-                                        ? Colors.red[50]
-                                        : Colors.white,
-                                foregroundColor: showCorrectAnswer
-                                    ? Colors.green[700]
-                                    : showIncorrectSelection
-                                        ? Colors.red[700]
-                                        : Colors.purple,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  side: BorderSide(
-                                    color: showCorrectAnswer
-                                        ? Colors.green
-                                        : showIncorrectSelection
-                                            ? Colors.red
-                                            : Colors.purple,
-                                    width: (showCorrectAnswer ||
-                                            showIncorrectSelection)
-                                        ? 2
-                                        : 1,
+                            child: Material(
+                              borderRadius: BorderRadius.circular(12),
+                              elevation: isSelected ? 4 : 1,
+                              child: InkWell(
+                                onTap: showResult
+                                    ? null
+                                    : () => _checkAnswer(option),
+                                borderRadius: BorderRadius.circular(12),
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 16, horizontal: 24),
+                                  decoration: BoxDecoration(
+                                    color: backgroundColor,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: borderColor,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Center(
+                                        child: Text(
+                                          option,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight:
+                                                isSelected || showCorrectAnswer
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal,
+                                            color: showCorrectAnswer
+                                                ? Colors.green
+                                                : showIncorrectSelection
+                                                    ? Colors.red
+                                                    : isSelected
+                                                        ? const Color(
+                                                            0xFF7B2FF2)
+                                                        : Colors.black87,
+                                          ),
+                                        ),
+                                      ),
+                                      if (showCorrectAnswer)
+                                        const Icon(
+                                          Icons.check_circle,
+                                          color: Colors.green,
+                                          size: 24,
+                                        ),
+                                      if (showIncorrectSelection)
+                                        const Icon(
+                                          Icons.cancel,
+                                          color: Colors.red,
+                                          size: 24,
+                                        ),
+                                    ],
                                   ),
                                 ),
-                                elevation: (showCorrectAnswer ||
-                                        showIncorrectSelection)
-                                    ? 4
-                                    : 1,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      option,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: (showCorrectAnswer ||
-                                                showIncorrectSelection)
-                                            ? FontWeight.bold
-                                            : FontWeight.normal,
-                                      ),
-                                    ),
-                                  ),
-                                  if (showCorrectAnswer)
-                                    const Icon(
-                                      Icons.check_circle,
-                                      color: Colors.green,
-                                      size: 24,
-                                    ),
-                                  if (showIncorrectSelection)
-                                    const Icon(
-                                      Icons.cancel,
-                                      color: Colors.red,
-                                      size: 24,
-                                    ),
-                                ],
                               ),
                             ),
                           );
