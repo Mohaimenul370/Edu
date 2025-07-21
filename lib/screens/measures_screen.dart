@@ -634,7 +634,7 @@ class _MeasuresScreenState extends State<MeasuresScreen>
       await speakText('Try again! The correct answer is ${shuffledGames[currentQuestion]['correctAnswer']}');
     }
 
-    Future.delayed(const Duration(seconds: 1), () async {
+    Future.delayed(const Duration(seconds: 0), () async {
       if (mounted) {
         if (currentQuestion < shuffledGames.length - 1) {
           setState(() {

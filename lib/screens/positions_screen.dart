@@ -225,7 +225,7 @@ class _PositionsScreenState extends State<PositionsScreen>
           'Try again! The correct answer is ${_shuffledQuestions[_currentQuestionIndex].correctAnswer}');
     }
 
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 0), () {
       if (mounted) {
         if (_currentQuestionIndex < _shuffledQuestions.length - 1) {
           setState(() {

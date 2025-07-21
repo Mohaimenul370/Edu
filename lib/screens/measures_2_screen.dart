@@ -318,7 +318,7 @@ class _Measures2ScreenState extends State<Measures2Screen> with TickerProviderSt
       await speakText('Try again! The correct answer is ${practiceQuestions[currentQuestion]['correctAnswer']}');
     }
 
-    await Future.delayed(const Duration(milliseconds: 1000));
+    await Future.delayed(const Duration(milliseconds: 0));
 
     if (!mounted) return;
 

@@ -189,7 +189,7 @@ class _ShapesScreenState extends State<ShapesScreen> with SingleTickerProviderSt
       await speakText('Try again! The correct answer is ${questions[currentQuestion].correctAnswer}');
     }
 
-    Future.delayed(const Duration(milliseconds: 1000), () async {
+    Future.delayed(const Duration(milliseconds: 0), () async {
       if (mounted) {
         if (currentQuestion < questions.length - 1) {
           setState(() {

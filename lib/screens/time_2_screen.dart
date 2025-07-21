@@ -592,7 +592,7 @@ class _Time2ScreenState extends State<Time2Screen>
     }
 
     // Shorter delay for better responsiveness
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 0), () {
       if (mounted) {
         if (currentQuestion < gameQuestions.length - 1) {
           setState(() {

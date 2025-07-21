@@ -217,7 +217,6 @@ class _NumbersTo20ScreenState extends State<NumbersTo20Screen> with TickerProvid
 
   void _checkAnswer(int selectedOption) async{
     if (!mounted) return;
-    
     setState(() {
       selectedAnswer = selectedOption;
       showResult = true;
@@ -236,7 +235,7 @@ class _NumbersTo20ScreenState extends State<NumbersTo20Screen> with TickerProvid
       }
 
 
-    Future.delayed(const Duration(milliseconds: 1000), () async {
+    Future.delayed(const Duration(milliseconds: 0), () async {
       if (!mounted) return;
       
       if (currentQuestion < questions.length - 1) {

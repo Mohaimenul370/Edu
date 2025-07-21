@@ -294,7 +294,7 @@ Green ■■
     }
 
     // Shorter delay for better responsiveness
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 0), () {
       if (mounted) {
         if (currentQuestionIndex < gameQuestions.length - 1) {
           setState(() {

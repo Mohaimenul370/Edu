@@ -144,7 +144,7 @@ Future<void> speakText(String text) async {
     "name": "en-US-Wavenet-F",
     "locale": "en-US",
   }); // Google UK English Female
-  await tts.setSpeechRate(.6); // Set a faster speech rate
+  await tts.setSpeechRate(.5); // Set a faster speech rate
   await tts.awaitSpeakCompletion(true);
   await tts.speak(text);
 }

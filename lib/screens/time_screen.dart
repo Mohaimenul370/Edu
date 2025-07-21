@@ -304,7 +304,7 @@ class _TimeScreenState extends State<TimeScreen> with TickerProviderStateMixin {
     }
 
     // Add animation and feedback delay before moving to next question
-    Future.delayed(const Duration(milliseconds: 1500), () {
+    Future.delayed(const Duration(milliseconds: 0), () {
       if (mounted) {
         setState(() {
           _showingFeedback = false;

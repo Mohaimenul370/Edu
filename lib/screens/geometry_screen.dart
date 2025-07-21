@@ -285,7 +285,7 @@ class _GeometryScreenState extends State<GeometryScreen>
     });
 
     // Wait for 1.5 seconds before moving to next question
-    Future.delayed(const Duration(milliseconds: 1000), () async {
+    Future.delayed(const Duration(milliseconds: 0), () async {
       if (currentQuestion < 4) {
         setState(() {
           currentQuestion++;

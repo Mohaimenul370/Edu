@@ -348,7 +348,7 @@ class _PositionPatterns2ScreenState extends State<PositionPatterns2Screen>
       }
 
     // Shorter delay for better responsiveness
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 0), () {
       if (mounted) {
       if (currentQuestion < shuffledConcepts.length - 1) {
           setState(() {

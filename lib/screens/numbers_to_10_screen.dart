@@ -658,7 +658,7 @@ class _NumbersTo10ScreenState extends State<NumbersTo10Screen> with TickerProvid
       }
 
     // Delay before moving to next question
-    Future.delayed(const Duration(seconds: 1), () async {
+    Future.delayed(const Duration(seconds: 0), () async {
       if (mounted) {
         if (currentQuestion < questions.length - 1) {
           setState(() {

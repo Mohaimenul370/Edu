@@ -389,7 +389,7 @@ class _StatisticsScreenState extends State<StatisticsScreen>
     }
 
     // Reduced delay from 800ms to 500ms
-    Future.delayed(const Duration(seconds: 1), () async {
+    Future.delayed(const Duration(seconds: 0), () async {
       if (mounted) {
         if (currentQuestion < gameQuestions.length - 1) {
           setState(() {

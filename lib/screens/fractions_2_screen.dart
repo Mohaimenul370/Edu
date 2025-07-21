@@ -135,7 +135,7 @@ class _Fractions2ScreenState extends State<Fractions2Screen>
     }
 
     // Shorter delay for better responsiveness
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 0), () {
       if (mounted) {
         if (currentQuestion < shuffledQuestions.length - 1) {
           setState(() {
