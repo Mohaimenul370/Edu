@@ -219,9 +219,9 @@ class _PositionsScreenState extends State<PositionsScreen>
     });
 
     if (_isCorrect) {
-      await speakText('Correct! Well done!');
+      await _speakText('Correct! Well done!');
     } else {
-      await speakText(
+      await _speakText(
           'Try again! The correct answer is ${_shuffledQuestions[_currentQuestionIndex].correctAnswer}');
     }
 
@@ -233,6 +233,8 @@ class _PositionsScreenState extends State<PositionsScreen>
             _selectedAnswer = null;
             _showResult = false;
             _isCorrect = false;
+            _currentOptions =
+                _getShuffledOptions(_shuffledQuestions[_currentQuestionIndex]);
           });
         } else {
           // Game completed, update progress and show dialog
@@ -268,6 +270,7 @@ class _PositionsScreenState extends State<PositionsScreen>
         _currentQuestionIndex++;
         _selectedAnswer = null;
         _showResult = false;
+        _isCorrect = false;
         _currentOptions =
             _getShuffledOptions(_shuffledQuestions[_currentQuestionIndex]);
         _animationController.reset();

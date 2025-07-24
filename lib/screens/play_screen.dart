@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:kg_education_app/utils/utils_func.dart';
 import '../services/game_progress_service.dart';
 import '../services/shared_preference_service.dart';
 import '../widgets/global_app_bar.dart';
@@ -61,9 +62,9 @@ class _PlayScreenState extends State<PlayScreen> with TickerProviderStateMixin {
     ),
     MathProblem(
       question: 'What time is shown on the clock?',
-      visual: _buildClockVisual(6, 0),  // Changed to 6 o'clock
+      visual: _buildClockVisual(6, 0), // Changed to 6 o'clock
       options: ['2:00', '3:00', '4:00', '5:00', '6:00'],
-      correctAnswer: '6:00',  // Changed to 6:00
+      correctAnswer: '6:00', // Changed to 6:00
       category: 'Time',
     ),
     MathProblem(
@@ -275,9 +276,11 @@ class _PlayScreenState extends State<PlayScreen> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    _answerAnimation = CurvedAnimation(
-      parent: _answerAnimationController,
-      curve: Curves.easeInOut,
+    _answerAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
+      CurvedAnimation(
+        parent: _answerAnimationController,
+        curve: Curves.easeInOut,
+      ),
     );
   }
 
@@ -296,15 +299,11 @@ class _PlayScreenState extends State<PlayScreen> with TickerProviderStateMixin {
     await flutterTts.setSpeechRate(0.5);
   }
 
-  Future<void> _speakText(String text) async {
-    await flutterTts.speak(text);
-  }
-
   Future<void> _loadGameScores() async {
     setState(() {
       _isLoading = true;
     });
-    
+
     await SharedPreferenceService.initialize();
     setState(() {
       _gameScores.clear();
@@ -331,7 +330,7 @@ class _PlayScreenState extends State<PlayScreen> with TickerProviderStateMixin {
       // Only show dialog if progress is less than 100%
       _hasShownDialog = true;
       await _showProgressDialog();
-      
+
       // After dialog is closed, navigate back if not enough progress
       if (mounted && !_canStartPractice) {
         Navigator.of(context).pop();
@@ -466,33 +465,40 @@ class _PlayScreenState extends State<PlayScreen> with TickerProviderStateMixin {
     });
   }
 
-  void _checkAnswer(String answer) {
+  void _checkAnswer(String answer) async {
+    if (!mounted) return;
+
     setState(() {
       selectedAnswer = answer;
       showResult = true;
       isCorrect = answer == shuffledProblems[currentQuestion].correctAnswer;
-      _answerColor = isCorrect ? Colors.green.withOpacity(0.3) : Colors.red.withOpacity(0.3);
-      _answerAnimationController.reset();
-      _answerAnimationController.forward();
-      
-      if (isCorrect) {
-        score++;
-        _speakText('Correct!');
-      } else {
-        _speakText('Try again!');
-      }
+    });
 
-      // Save score if this is the last question
-      if (currentQuestion == shuffledProblems.length - 1) {
-        GameProgressService.saveGameProgress('play', score, shuffledProblems.length);
-      }
+    _answerAnimationController.forward().then((_) {
+      _answerAnimationController.reverse();
+    });
 
-      // Automatically move to next question after a short delay
+    if (isCorrect) {
+      score++;
+      await speakText('Correct! Well done!');
+    } else {
+      await speakText(
+          'Try again! The correct answer is ${shuffledProblems[currentQuestion].correctAnswer}');
+    }
+
+    Future.delayed(const Duration(milliseconds: 0), () async {
+      if (!mounted) return;
+
       if (currentQuestion < shuffledProblems.length - 1) {
-        Future.delayed(const Duration(seconds: 1), () {
-          _nextQuestion();
+        setState(() {
+          currentQuestion++;
+          selectedAnswer = null;
+          showResult = false;
         });
       } else {
+        // Save score if this is the last question
+        GameProgressService.saveGameProgress(
+            'play', score, shuffledProblems.length);
         // Show final results after a short delay
         Future.delayed(const Duration(seconds: 1), () {
           _showFinalResults();
@@ -509,10 +515,10 @@ class _PlayScreenState extends State<PlayScreen> with TickerProviderStateMixin {
         showResult = false;
         _animationController.reset();
         _animationController.forward();
-        _speakText('Next question!');
+        speakText('Next question!');
       } else {
         showFinalResults = true;
-        _speakText('You completed the game!');
+        speakText('You completed the game!');
         _showFinalResults();
       }
     });
@@ -553,7 +559,8 @@ class _PlayScreenState extends State<PlayScreen> with TickerProviderStateMixin {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    color:
+                        Theme.of(context).colorScheme.primary.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -574,7 +581,8 @@ class _PlayScreenState extends State<PlayScreen> with TickerProviderStateMixin {
                 ),
                 const SizedBox(height: 16),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   decoration: BoxDecoration(
                     color: Colors.grey.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -613,7 +621,8 @@ class _PlayScreenState extends State<PlayScreen> with TickerProviderStateMixin {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -629,7 +638,8 @@ class _PlayScreenState extends State<PlayScreen> with TickerProviderStateMixin {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -759,7 +769,8 @@ class _PlayScreenState extends State<PlayScreen> with TickerProviderStateMixin {
                     LinearProgressIndicator(
                       value: _mathPlayPercentage / 100,
                       backgroundColor: Colors.grey.withOpacity(0.3),
-                      valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF7B2FF2)),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                          Color(0xFF7B2FF2)),
                       minHeight: 8,
                     ),
                   ],
@@ -817,7 +828,8 @@ class _PlayScreenState extends State<PlayScreen> with TickerProviderStateMixin {
                         aspectRatio: 1.5,
                         child: Center(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
                             child: shuffledProblems[currentQuestion].visual,
                           ),
                         ),
@@ -840,59 +852,69 @@ class _PlayScreenState extends State<PlayScreen> with TickerProviderStateMixin {
             Column(
               children: shuffledProblems[currentQuestion].options.map((option) {
                 final isSelected = option == selectedAnswer;
-                final isCorrectAnswer = option == shuffledProblems[currentQuestion].correctAnswer;
-                
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                final isCorrect = showResult &&
+                    option == shuffledProblems[currentQuestion].correctAnswer;
+                final isIncorrect = showResult &&
+                    isSelected &&
+                    option != shuffledProblems[currentQuestion].correctAnswer;
+
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8),
                   child: AnimatedBuilder(
-                    animation: _answerAnimation,
+                    animation: _answerAnimationController,
                     builder: (context, child) {
-                      return Container(
-                        decoration: showResult && isSelected
-                            ? BoxDecoration(
-                                color: isCorrect ? Colors.green.withOpacity(0.2) : Colors.red.withOpacity(0.2),
+                      return Transform.scale(
+                        scale: isSelected ? _answerAnimation.value : 1.0,
+                        child: Material(
+                          borderRadius: BorderRadius.circular(12),
+                          elevation: isSelected ? 4 : 1,
+                          child: InkWell(
+                            onTap: showResult
+                                ? null
+                                : () {
+                                    if (mounted) {
+                                      _checkAnswer(option);
+                                    }
+                                  },
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 16, horizontal: 20),
+                              decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
+                                color: isCorrect
+                                    ? Colors.green.withOpacity(0.2)
+                                    : isIncorrect
+                                        ? Colors.red.withOpacity(0.2)
+                                        : Colors.white,
                                 border: Border.all(
-                                  color: isCorrect ? Colors.green : Colors.red,
-                                  width: 2,
-                                ),
-                              )
-                            : null,
-                        child: ScaleTransition(
-                          scale: _animation,
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: showResult ? null : () => _checkAnswer(option),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: showResult
-                                    ? (isSelected
-                                        ? (isCorrect ? Colors.green : Colors.red)
-                                        : (isCorrectAnswer && showResult
-                                            ? Colors.green
-                                            : null))
-                                    : null,
-                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  color: isCorrect
+                                      ? Colors.green
+                                      : isIncorrect
+                                          ? Colors.red
+                                          : isSelected
+                                              ? const Color(0xFF7B2FF2)
+                                              : Colors.grey.shade300,
+                                  width: isSelected ? 2 : 1,
                                 ),
                               ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    option,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                                  if (showResult && isSelected) ...[
-                                    const SizedBox(width: 8),
-                                    Icon(
-                                      isCorrect ? Icons.check_circle : Icons.cancel,
-                                      color: isCorrect ? Colors.green : Colors.red,
-                                    ),
-                                  ],
-                                ],
+                              child: Text(
+                                option,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                  color: isCorrect
+                                      ? Colors.green
+                                      : isIncorrect
+                                          ? Colors.red
+                                          : isSelected
+                                              ? const Color(0xFF7B2FF2)
+                                              : Colors.black87,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
                             ),
                           ),
@@ -927,7 +949,7 @@ class ClockPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
-    
+
     // Draw hour markers
     final markerPaint = Paint()
       ..color = color
@@ -1000,5 +1022,4 @@ final List<Map<String, dynamic>> chapters = [
   {'title': 'Statistics 2', 'route': '/statistics_2'},
   {'title': 'Time 2', 'route': '/time_2'},
   {'title': 'Position Patterns 2', 'route': '/position_patterns_2'},
-
-]; 
+];
